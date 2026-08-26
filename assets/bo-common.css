@@ -1,0 +1,14 @@
+body{margin:0;background:#F6EEE0;font-family:'Work Sans',system-ui,sans-serif;color:#23281E}
+a{color:#405035;text-decoration:none}
+*{box-sizing:border-box}
+.navbtn{display:block;text-align:left;padding:13px 15px;border:none;border-radius:3px;font-family:'Work Sans',sans-serif;font-size:14px;letter-spacing:.03em;cursor:pointer;background:transparent;color:#D6D8C4}
+.navbtn.active{background:#F6EEE0;color:#405035}
+.hoverable:hover{filter:brightness(0.95)}
+input,textarea,select{font-family:'Work Sans',sans-serif}
+input:focus,textarea:focus,select:focus{outline:2px solid #405035;outline-offset:1px}
+.h2block{border:1px solid #E6DECE;border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FDFBF6}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:48px 20px;text-align:center;color:#8A8B78;font-size:13.5px}
+.kpi-card{background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:22px 22px;display:flex;flex-direction:column;gap:8px}
+.kpi-value{font-family:'Libre Caslon Display',serif;font-size:34px;line-height:1;color:#2F3B27}
+.kpi-label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8A8B78}
+.kpi-sub{font-size:12px;color:#5A5F4C}

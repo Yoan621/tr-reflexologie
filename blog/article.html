@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="doc-title">Article — Blog TR Réflexologie</title>
+<meta id="meta-description" name="description" content="">
+<link rel="icon" href="../assets/favicons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicons/apple-touch-icon.png">
+<link rel="manifest" href="../assets/favicons/site.webmanifest">
+<meta name="theme-color" content="#405035">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="TR Réflexologie">
+<meta id="og-title" property="og:title" content="Article — TR Réflexologie">
+<meta id="og-description" property="og:description" content="">
+<meta id="og-image" property="og:image" content="../assets/favicons/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta id="twitter-image" name="twitter:image" content="../assets/favicons/twitter-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F6EEE0;font-family:'Work Sans',system-ui,sans-serif;color:#23281E;text-wrap:pretty}
+a{color:#405035;text-decoration:none}
+a:hover{color:#6E7F5E}
+*{box-sizing:border-box}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:80px 20px;text-align:center;color:#8A8B78;font-size:14px}
+.nav-soins-wrap{position:relative}
+.nav-soins-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#FDFBF6;border:1px solid #E0D7C4;border-radius:8px;padding:10px;min-width:230px;box-shadow:0 8px 24px rgba(29,34,24,.14);z-index:40;flex-direction:column;gap:2px}
+.nav-soins-wrap:hover .nav-soins-menu,.nav-soins-menu.open{display:flex}
+.nav-soins-menu a{padding:9px 12px;border-radius:6px;font-size:14px;color:#3E4335;display:block}
+.nav-soins-menu a:hover{background:#F3EEDF;color:#2F3B27}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/supabase-config.js"></script>
+<script id="ld-json" type="application/ld+json"></script>
+</head>
+<body>
+
+<div style="background:#F6EEE0;overflow-x:clip">
+
+<header style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px clamp(20px,4vw,64px);background:#F6EEE0;position:relative;z-index:20;flex-wrap:wrap">
+<a href="../index.html" style="display:flex;align-items:center;gap:12px">
+<img src="../assets/logo-tr.svg" alt="TR Réflexologie" style="height:64px;width:auto;display:block;mix-blend-mode:multiply">
+</a>
+<nav id="main-nav" style="display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-width:0;gap:clamp(8px,1.2vw,22px);font-size:clamp(13px,1.05vw,15px);letter-spacing:.01em;color:#4A4F3E;white-space:nowrap">
+<div class="nav-soins-wrap">
+<button type="button" class="nav-soins-btn" style="display:inline-flex;align-items:center;gap:4px;background:none;border:none;font:inherit;color:#4A4F3E;cursor:pointer;padding:0">Les soins <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="nav-soins-menu">
+<a href="../soins/plantaire.html">Réflexologie plantaire</a>
+<a href="../soins/palmaire.html">Réflexologie palmaire</a>
+<a href="../soins/cranienne.html">Réflexologie crânienne</a>
+<a href="../soins/dien-chan.html">Dien Chan</a>
+</div>
+</div>
+<a href="../index.html#reserver" style="color:#4A4F3E">Tarifs</a>
+<a href="../apropos.html" style="color:#4A4F3E">À propos</a>
+<a href="../bons-cadeaux.html" style="color:#4A4F3E">Bons cadeaux</a>
+<a href="index.html" style="color:#2F3B27;font-weight:500">Blog</a>
+<a href="../index.html#venir" style="color:#4A4F3E">Accès &amp; horaires</a>
+</nav>
+<div style="display:flex;align-items:center;gap:16px;flex:0 0 auto">
+<a href="../index.html#reserver" class="hoverable cta-desktop" data-hover="background:#2F3B27" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:44px">Prendre rendez-vous</a>
+<button id="burger-btn" aria-label="Ouvrir le menu" aria-expanded="false" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0;background:none;border:none;cursor:pointer">
+<span style="display:block;width:22px;height:2px;background:#405035"></span>
+<span style="display:block;width:22px;height:2px;background:#405035"></span>
+<span style="display:block;width:22px;height:2px;background:#405035"></span>
+</button>
+</div>
+</header>
+<style>
+@media (max-width: 860px) {
+  #main-nav { display:none !important; }
+  .cta-desktop { display:none !important; }
+  #burger-btn { display:flex !important; }
+  #mobile-nav.open { display:flex !important; }
+}
+</style>
+<nav id="mobile-nav" style="display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:min(320px,80vw);background:#F6EEE0;z-index:30;padding:28px 28px;gap:22px;box-shadow:-8px 0 24px rgba(29,34,24,.18)">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<img src="../assets/logo-tr.svg" alt="TR Réflexologie" style="height:44px;width:auto;display:block;mix-blend-mode:multiply">
+<button id="burger-close" aria-label="Fermer le menu" style="background:none;border:none;font-size:26px;line-height:1;color:#405035;cursor:pointer;padding:4px">×</button>
+</div>
+<span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8A8B78;margin-top:6px">Les soins</span>
+<a href="../soins/plantaire.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie plantaire</a>
+<a href="../soins/palmaire.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie palmaire</a>
+<a href="../soins/cranienne.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie crânienne</a>
+<a href="../soins/dien-chan.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Dien Chan</a>
+<a href="../index.html#reserver" style="color:#3E4335;font-size:16px;margin-top:6px" data-mobile-link>Tarifs</a>
+<a href="../apropos.html" style="color:#3E4335;font-size:16px" data-mobile-link>À propos</a>
+<a href="../bons-cadeaux.html" style="color:#3E4335;font-size:16px" data-mobile-link>Bons cadeaux</a>
+<a href="index.html" style="color:#2F3B27;font-size:16px;font-weight:500" data-mobile-link>Blog</a>
+<a href="../index.html#venir" style="color:#3E4335;font-size:16px" data-mobile-link>Accès &amp; horaires</a>
+<a href="../index.html#reserver" data-mobile-link style="display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:46px;margin-top:8px">Prendre rendez-vous</a>
+</nav>
+<div id="mobile-nav-overlay" style="display:none;position:fixed;inset:0;background:rgba(29,34,24,.4);z-index:25"></div>
+
+<div id="article-wrap" style="max-width:760px;margin:0 auto;padding:clamp(36px,6vw,64px) clamp(20px,4vw,64px) clamp(64px,8vw,96px)">
+<div class="empty-state">Chargement de l'article…</div>
+</div>
+
+</div>
+
+<footer style="background:#F6EEE0;padding:clamp(48px,6vw,80px) clamp(20px,4vw,64px) 32px">
+<div style="max-width:1240px;margin:0 auto;display:flex;gap:clamp(28px,4vw,64px);flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid #E0D7C4">
+<div style="flex:1 1 280px;min-width:240px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<img src="../assets/logo-tr.svg" alt="TR Réflexologie" style="height:62px;width:auto;display:block;mix-blend-mode:multiply">
+<span style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#A8A995">Tavel · Gard</span>
+</div>
+<p style="margin:0;font-size:14.5px;line-height:1.75;color:#5A5F4C;max-width:32ch">Réflexologie plantaire, palmaire, crânienne et Dien Chan. Sur rendez-vous, du mardi au samedi matin.</p>
+<div style="display:flex;gap:10px">
+<a href="https://www.instagram.com/tr_reflexologie/" target="_blank" rel="noopener noreferrer" aria-label="TR Réflexologie sur Instagram" class="hoverable" data-hover="border-color:#405035" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #D8CEB9;border-radius:50%;font-size:12px;letter-spacing:.06em;color:#405035">IG</a>
+<a href="https://www.facebook.com/profile.php?id=61594053410022" target="_blank" rel="noopener noreferrer" aria-label="TR Réflexologie sur Facebook" class="hoverable" data-hover="border-color:#405035" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #D8CEB9;border-radius:50%;font-size:12px;letter-spacing:.06em;color:#405035">FB</a>
+</div>
+</div>
+<div style="flex:1 1 160px;min-width:150px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Les soins</span>
+<a href="../soins/plantaire.html" style="font-size:14.5px;color:#3E4335">Plantaire</a><a href="../soins/palmaire.html" style="font-size:14.5px;color:#3E4335">Palmaire</a><a href="../soins/cranienne.html" style="font-size:14.5px;color:#3E4335">Crânienne</a><a href="../soins/dien-chan.html" style="font-size:14.5px;color:#3E4335">Dien Chan</a>
+</div>
+<div style="flex:1 1 160px;min-width:150px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Pratique</span>
+<a href="../index.html#reserver" style="font-size:14.5px;color:#3E4335">Tarifs</a><a href="../bons-cadeaux.html" style="font-size:14.5px;color:#3E4335">Bons cadeaux</a><a href="../index.html#reserver" style="font-size:14.5px;color:#3E4335">Réserver</a>
+</div>
+<div style="flex:1 1 220px;min-width:200px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Contact</span>
+<span style="font-size:14.5px;line-height:1.6;color:#3E4335">543 chemin de Valinière<br>30126 Tavel</span>
+<a href="tel:+33629563570" style="font-size:14.5px;color:#405035">06 29 56 35 70</a>
+<a href="mailto:contact@tr-reflexologie.fr" style="font-size:14.5px;color:#405035">contact@tr-reflexologie.fr</a>
+</div>
+</div>
+<div style="max-width:1240px;margin:0 auto;padding-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#8A8B78">
+<span>© 2026 TR Réflexologie · Tavel (30). La réflexologie est une technique de bien-être et ne remplace pas un avis médical.</span>
+<div style="display:flex;gap:20px"><a href="../mentions-legales.html" style="color:#8A8B78">Mentions légales</a><a href="../confidentialite.html" style="color:#8A8B78">Confidentialité</a><a href="#" onclick="window.TR_openCookieSettings();return false" style="color:#8A8B78">Cookies</a></div>
+</div>
+</footer>
+
+<script>
+// Mobile burger menu
+(function () {
+  const btn = document.getElementById('burger-btn');
+  const closeBtn = document.getElementById('burger-close');
+  const nav = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('mobile-nav-overlay');
+  if (!btn || !nav || !overlay) return;
+  function open() { nav.style.display = 'flex'; overlay.style.display = 'block'; btn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
+  function close() { nav.style.display = 'none'; overlay.style.display = 'none'; btn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+  btn.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  nav.querySelectorAll('[data-mobile-link]').forEach(a => a.addEventListener('click', close));
+})();
+
+(function () {
+  const menu = document.querySelector('.nav-soins-menu');
+  const trigger = document.querySelector('.nav-soins-btn');
+  if (!menu || !trigger) return;
+  trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
+  document.addEventListener('click', () => menu.classList.remove('open'));
+})();
+
+document.querySelectorAll('.hoverable').forEach(el => {
+  const hoverStyle = el.getAttribute('data-hover');
+  if (!hoverStyle) return;
+  const rules = hoverStyle.split(';').filter(Boolean).map(r => r.split(':').map(s => s.trim()));
+  function camelCase(s) { return s.replace(/-([a-z])/g, (_, c) => c.toUpperCase()); }
+  const original = rules.map(([prop]) => el.style[camelCase(prop)]);
+  el.addEventListener('mouseenter', () => rules.forEach(([prop, val]) => el.style[camelCase(prop)] = val));
+  el.addEventListener('mouseleave', () => rules.forEach(([prop], i) => el.style[camelCase(prop)] = original[i]));
+});
+
+// Article detail
+(function () {
+  const sb = window.getSupabase();
+  const wrap = document.getElementById('article-wrap');
+  const dfmt = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const slug = new URLSearchParams(location.search).get('slug');
+
+  function escapeHtml(s) {
+    return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  if (!slug) {
+    wrap.innerHTML = '<div class="empty-state">Article introuvable.<br><a href="index.html">← Retour au blog</a></div>';
+  } else {
+    sb.from('articles_blog').select('*').eq('slug', slug).eq('statut', 'publie').maybeSingle()
+      .then(({ data: a, error }) => {
+        if (error || !a) {
+          wrap.innerHTML = '<div class="empty-state">Cet article n\'existe pas ou n\'est plus disponible.<br><a href="index.html">← Retour au blog</a></div>';
+          return;
+        }
+
+        document.getElementById('doc-title').textContent = (a.meta_titre || a.titre) + ' — TR Réflexologie';
+        document.getElementById('meta-description').setAttribute('content', a.meta_description || '');
+        document.getElementById('og-title').setAttribute('content', (a.meta_titre || a.titre) + ' — TR Réflexologie');
+        document.getElementById('og-description').setAttribute('content', a.meta_description || '');
+        if (a.image_une_url) {
+          document.getElementById('og-image').setAttribute('content', a.image_une_url);
+          document.getElementById('twitter-image').setAttribute('content', a.image_une_url);
+        }
+
+        const schema = {
+          '@context': 'https://schema.org',
+          '@type': a.schema_type || 'Article',
+          headline: a.titre,
+          description: a.meta_description || '',
+          image: a.image_une_url || undefined,
+          author: {
+            '@type': 'Person',
+            name: 'Nathalie Roudil',
+            url: 'https://tr-reflexologie.fr/apropos.html',
+            image: 'https://tr-reflexologie.fr/assets/nathalie-portrait.webp',
+            jobTitle: 'Réflexologue',
+            sameAs: [
+              'https://www.instagram.com/tr_reflexologie/',
+              'https://www.facebook.com/profile.php?id=61594053410022'
+            ]
+          },
+          publisher: { '@type': 'LocalBusiness', name: 'TR Réflexologie' },
+          datePublished: a.published_at || undefined,
+          dateModified: a.updated_at || undefined,
+          mainEntityOfPage: location.href
+        };
+        document.getElementById('ld-json').textContent = JSON.stringify(schema, null, 2);
+
+        const sectionsHtml = (a.sections || []).map(s =>
+          '<h2 style="margin:36px 0 12px;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27">' + escapeHtml(s.h2) + '</h2>' +
+          '<p style="margin:0;font-size:16px;line-height:1.8;color:#3E4335;white-space:pre-line">' + escapeHtml(s.content) + '</p>'
+        ).join('');
+
+        wrap.innerHTML =
+          '<a href="index.html" style="font-size:13px;color:#8A8B78">← Retour au blog</a>' +
+          '<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px">' +
+            (a.categorie ? '<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">' + escapeHtml(a.categorie) + '</span>' : '') +
+            '<h1 style="margin:0;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:clamp(30px,4.4vw,44px);line-height:1.1;color:#2F3B27">' + escapeHtml(a.titre) + '</h1>' +
+            '<span style="font-size:13px;color:#8A8B78">Par Nathalie Roudil' + (a.published_at ? ' · ' + dfmt(a.published_at) : '') + '</span>' +
+          '</div>' +
+          (a.image_une_url ? '<img src="' + a.image_une_url + '" alt="' + escapeHtml(a.image_une_alt || a.titre) + '" style="width:100%;border-radius:6px;margin-top:28px;display:block">' : '') +
+          '<div style="margin-top:8px">' + sectionsHtml + '</div>' +
+          '<div style="margin-top:48px;padding-top:28px;border-top:1px solid #E0D7C4;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">' +
+            '<span style="font-size:14px;color:#5A5F4C">Envie d\'en discuter ?</span>' +
+            '<a href="../index.html#reserver" class="hoverable" data-hover="background:#2F3B27" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase">Prendre rendez-vous</a>' +
+          '</div>';
+      });
+  }
+})();
+</script>
+<script>window.TR_ROOT = '../';</script>
+<script src="../assets/cookie-consent.js"></script>
+</body>
+</html>

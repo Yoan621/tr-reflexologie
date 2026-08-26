@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /backoffice.html
+Disallow: /clients.html
+Disallow: /factures.html
+Disallow: /agenda.html
+Disallow: /bons.html
+Disallow: /blog.html
+Disallow: /mentions-legales.html
+Disallow: /confidentialite.html
+
+Sitemap: https://tr-reflexologie.fr/sitemap.xml

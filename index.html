@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réflexologue à Tavel – TR Réflexologie</title>
+<meta name="description" content="Réflexologie plantaire, palmaire, crânienne et Dien Chan à Tavel (Gard). Séances sur mesure du mardi au samedi matin.">
+<link rel="canonical" href="https://tr-reflexologie.fr/">
+<link rel="icon" href="assets/favicons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png">
+<link rel="manifest" href="assets/favicons/site.webmanifest">
+<meta name="theme-color" content="#405035">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TR Réflexologie">
+<meta property="og:title" content="Réflexologue à Tavel – TR Réflexologie">
+<meta property="og:description" content="Réflexologie plantaire, palmaire, crânienne et Dien Chan à Tavel (Gard). Séances sur mesure du mardi au samedi matin.">
+<meta property="og:image" content="assets/favicons/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="assets/favicons/twitter-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F6EEE0;font-family:'Work Sans',system-ui,sans-serif;color:#23281E;text-wrap:pretty}
+a{color:#405035;text-decoration:none}
+a:hover{color:#6E7F5E}
+*{box-sizing:border-box}
+.ph{display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(135deg,#EDE7D7,#EDE7D7 10px,#E4DCC7 10px,#E4DCC7 20px);color:#8A8B78;font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-align:center;width:100%;height:100%}
+.nav-soins-wrap{position:relative}
+.nav-soins-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#FDFBF6;border:1px solid #E0D7C4;border-radius:8px;padding:10px;min-width:230px;box-shadow:0 8px 24px rgba(29,34,24,.14);z-index:40;flex-direction:column;gap:2px}
+.nav-soins-wrap:hover .nav-soins-menu,.nav-soins-menu.open{display:flex}
+.nav-soins-menu a{padding:9px 12px;border-radius:6px;font-size:14px;color:#3E4335;display:block}
+.nav-soins-menu a:hover{background:#F3EEDF;color:#2F3B27}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+</head>
+<body>
+
+<div style="background:#F6EEE0;overflow-x:clip">
+
+<header id="site-header" style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px clamp(20px,4vw,64px);background:#F6EEE0;position:sticky;top:0;z-index:20;flex-wrap:wrap;transition:transform .35s ease">
+<a href="#accueil" style="display:flex;align-items:center;gap:12px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:64px;width:auto;display:block;mix-blend-mode:multiply">
+</a>
+<nav id="main-nav" style="display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-width:0;gap:clamp(8px,1.2vw,22px);font-size:clamp(13px,1.05vw,15px);letter-spacing:.01em;color:#4A4F3E;white-space:nowrap">
+<div class="nav-soins-wrap">
+<button type="button" class="nav-soins-btn" style="display:inline-flex;align-items:center;gap:4px;background:none;border:none;font:inherit;color:#4A4F3E;cursor:pointer;padding:0">Les soins <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="nav-soins-menu">
+<a href="soins/plantaire.html">Réflexologie plantaire</a>
+<a href="soins/palmaire.html">Réflexologie palmaire</a>
+<a href="soins/cranienne.html">Réflexologie crânienne</a>
+<a href="soins/dien-chan.html">Dien Chan</a>
+</div>
+</div>
+<a href="#reserver" style="color:#4A4F3E">Tarifs</a>
+<a href="apropos.html" style="color:#4A4F3E">À propos</a>
+<a href="bons-cadeaux.html" style="color:#4A4F3E">Bons cadeaux</a>
+<a href="blog/" style="color:#4A4F3E">Blog</a>
+<a href="#venir" style="color:#4A4F3E">Accès &amp; horaires</a>
+</nav>
+<div style="display:flex;align-items:center;gap:16px;flex:0 0 auto">
+<a href="#reserver" class="hoverable cta-desktop" data-hover="background:#2F3B27" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:44px">Prendre rendez-vous</a>
+<button id="burger-btn" aria-label="Ouvrir le menu" aria-expanded="false" style="display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0;background:none;border:none;cursor:pointer">
+<span style="display:block;width:22px;height:2px;background:#405035;transition:transform .25s ease,opacity .25s ease"></span>
+<span style="display:block;width:22px;height:2px;background:#405035;transition:transform .25s ease,opacity .25s ease"></span>
+<span style="display:block;width:22px;height:2px;background:#405035;transition:transform .25s ease,opacity .25s ease"></span>
+</button>
+</div>
+</header>
+<style>
+@media (max-width: 860px) {
+  #main-nav { display:none !important; }
+  .cta-desktop { display:none !important; }
+  #burger-btn { display:flex !important; }
+  #mobile-nav.open { display:flex !important; }
+}
+</style>
+<nav id="mobile-nav" style="display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:min(320px,80vw);background:#F6EEE0;z-index:30;padding:28px 28px;gap:22px;box-shadow:-8px 0 24px rgba(29,34,24,.18);transform:translateX(0)">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:44px;width:auto;display:block;mix-blend-mode:multiply">
+<button id="burger-close" aria-label="Fermer le menu" style="background:none;border:none;font-size:26px;line-height:1;color:#405035;cursor:pointer;padding:4px">×</button>
+</div>
+<span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8A8B78;margin-top:6px">Les soins</span>
+<a href="soins/plantaire.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie plantaire</a>
+<a href="soins/palmaire.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie palmaire</a>
+<a href="soins/cranienne.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Réflexologie crânienne</a>
+<a href="soins/dien-chan.html" style="color:#3E4335;font-size:16px;padding-left:8px" data-mobile-link>Dien Chan</a>
+<a href="#reserver" style="color:#3E4335;font-size:16px;margin-top:6px" data-mobile-link>Tarifs</a>
+<a href="apropos.html" style="color:#3E4335;font-size:16px" data-mobile-link>À propos</a>
+<a href="bons-cadeaux.html" style="color:#3E4335;font-size:16px" data-mobile-link>Bons cadeaux</a>
+<a href="blog/" style="color:#3E4335;font-size:16px" data-mobile-link>Blog</a>
+<a href="#venir" style="color:#3E4335;font-size:16px" data-mobile-link>Accès &amp; horaires</a>
+<a href="#reserver" data-mobile-link style="display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:46px;margin-top:8px">Prendre rendez-vous</a>
+</nav>
+<div id="mobile-nav-overlay" style="display:none;position:fixed;inset:0;background:rgba(29,34,24,.4);z-index:25"></div>
+
+<section id="accueil" style="position:relative;width:100%;height:min(78vh,720px);min-height:520px;overflow:hidden">
+<div style="position:absolute;inset:0"><img src="assets/nathalie-cabinet-large.webp" alt="Séance de réflexologie plantaire" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div>
+<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(29,34,24,.72) 0%,rgba(29,34,24,.42) 46%,rgba(29,34,24,.06) 78%);pointer-events:none"></div>
+<div style="position:absolute;left:0;bottom:0;padding:clamp(28px,5vw,72px);max-width:min(760px,92%);display:flex;flex-direction:column;gap:20px;pointer-events:none">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Réflexologie plantaire · palmaire · crânienne · Dien Chan</span>
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;pointer-events:auto">
+<span style="display:flex;align-items:center;gap:9px;padding:9px 16px 9px 13px;background:rgba(246,238,224,.14);border:1px solid rgba(246,238,224,.34);border-radius:999px;backdrop-filter:blur(6px)">
+<span style="font-size:13px;letter-spacing:.14em;color:#F0D9A8">★★★★★</span>
+<span style="font-size:13.5px;color:#F6EEE0">4,9</span>
+<span style="font-size:13px;color:#DCD5C2">· 38 avis Google</span>
+</span>
+<span style="font-size:13.5px;color:#DCD5C2">Plus de 120 personnes accompagnées à Tavel</span>
+</div>
+<h1 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(38px,5.2vw,70px);line-height:1.02;letter-spacing:-.01em;color:#F6EEE0">Retrouver son équilibre,<br><span style="color:#DAD6C0">pas à pas.</span></h1>
+<p style="margin:0;max-width:44ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">Des séances sur mesure pour relâcher les tensions, retrouver le sommeil et apaiser le mental, dans un cabinet calme, du mardi au samedi matin.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap;pointer-events:auto;margin-top:6px">
+<a href="#reserver" class="hoverable" data-hover="background:#fff" style="display:inline-flex;align-items:center;gap:10px;padding:16px 30px;background:#F6EEE0;color:#405035;border-radius:999px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;min-height:48px">Réserver une séance</a>
+<a href="#soins" class="hoverable" data-hover="border-color:#F6EEE0" style="display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border:1px solid rgba(246,238,224,.55);color:#F6EEE0;border-radius:999px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;min-height:48px">Découvrir les soins</a>
+</div>
+</div>
+</section>
+
+<section style="background:#F6EEE0;padding:clamp(40px,5.5vw,64px) clamp(20px,4vw,64px);display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Faites défiler</span>
+<a href="#soins" aria-label="Découvrir les soins en vidéo" class="scroll-cue" style="position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:#405035;color:#F6EEE0">
+<span class="scroll-cue-ring" style="position:absolute;inset:-8px;border-radius:50%;border:1px solid #405035"></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:scrollCueBounce 1.8s ease-in-out infinite"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
+</a>
+</section>
+<style>
+@keyframes scrollCueBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+@keyframes scrollCueRing { 0%{transform:scale(1);opacity:.55} 100%{transform:scale(1.35);opacity:0} }
+.scroll-cue-ring { animation:scrollCueRing 2.2s ease-out infinite; }
+.scroll-cue { transition:transform .25s ease,background .25s ease,box-shadow .25s ease; box-shadow:0 4px 14px rgba(64,80,53,.25); }
+.scroll-cue:hover { transform:scale(1.1) translateY(2px); background:#2F3B27; box-shadow:0 6px 20px rgba(64,80,53,.38); }
+.scroll-cue:hover svg { animation-play-state:paused; }
+</style>
+
+<section id="soins" style="position:relative;height:340vh;background:#2F3B27">
+<div style="position:sticky;top:0;height:100vh;overflow:hidden">
+<video id="soins-video-0" class="soins-video" src="assets/soins-1-cranienne.mp4" poster="assets/nathalie-cabinet-large.png" muted playsinline loop preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity .5s ease"></video>
+<video id="soins-video-1" class="soins-video" src="assets/soins-2-palmaire.mp4" muted playsinline loop preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease"></video>
+<video id="soins-video-2" class="soins-video" src="assets/soins-3-plantaire.mp4" muted playsinline loop preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease"></video>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(29,34,24,.58) 0%,rgba(29,34,24,.22) 34%,rgba(29,34,24,.86) 100%);pointer-events:none"></div>
+<div style="position:absolute;top:0;left:0;right:0;padding:clamp(24px,4vw,56px);display:flex;align-items:flex-start;justify-content:space-between;gap:24px;pointer-events:none">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#C9CBB6">Les soins</span>
+<span style="font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(22px,2.2vw,30px);line-height:1.15;color:#F6EEE0">Trois portes d'entrée,<br>une même écoute</span>
+</div>
+</div>
+<div id="soins-ch-0" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);transition:opacity .5s ease,transform .5s ease">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 1 sur 3</span>
+<h3 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Crânienne ou Dien Chan</h3>
+<p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">Deux massages de la tête, proposés en séances séparées. Tous deux soulagent le mental qui tourne : maux de tête, charge mentale, fatigue nerveuse. La crânienne détend le cuir chevelu en douceur ; le Dien Chan stimule avec précision les points réflexes du visage.</p>
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">140 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">3×1 heure</span>
+</div>
+<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:4px;pointer-events:auto">
+<a href="#reserver" class="hoverable" data-hover="background:#fff" style="align-self:flex-start;display:inline-flex;align-items:center;padding:16px 30px;background:#F6EEE0;color:#405035;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:48px">Réserver cette séance</a>
+<a href="soins/cranienne.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">Crânienne, en savoir plus →</a>
+<a href="soins/dien-chan.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">Dien Chan, en savoir plus →</a>
+</div>
+</div>
+<div id="soins-ch-1" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 2 sur 3</span>
+<h3 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Palmaire</h3>
+<p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">Un massage des mains, doux et facile à recevoir. Idéal si vos pieds sont sensibles au toucher, ou pour soulager les tensions liées aux écrans : poignets, avant-bras, épaules.</p>
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">140 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">3×1 heure</span>
+</div>
+<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:4px">
+<a href="#reserver" class="hoverable" data-hover="background:#fff" style="align-self:flex-start;display:inline-flex;align-items:center;padding:16px 30px;background:#F6EEE0;color:#405035;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:48px">Réserver cette séance</a>
+<a href="soins/palmaire.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">En savoir plus →</a>
+</div>
+</div>
+<div id="soins-ch-2" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 3 sur 3</span>
+<h3 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Plantaire</h3>
+<p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">La séance la plus complète : chaque zone du pied fait écho à une partie du corps. Elle agit en profondeur sur le stress installé, le sommeil et la digestion.</p>
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
+<span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
+<span style="font-family:'Libre Caslon Display',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">140 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">3×1 heure</span>
+</div>
+<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:4px">
+<a href="#reserver" class="hoverable" data-hover="background:#fff" style="align-self:flex-start;display:inline-flex;align-items:center;padding:16px 30px;background:#F6EEE0;color:#405035;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:48px">Réserver cette séance</a>
+<a href="soins/plantaire.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">En savoir plus →</a>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:0 clamp(28px,5vw,72px) clamp(20px,3vw,34px);display:flex;gap:10px;align-items:center;pointer-events:none">
+<span style="flex:1;height:2px;background:rgba(246,238,224,.28);display:block;overflow:hidden"><span id="soins-fill-0" style="display:block;height:100%;background:#F6EEE0;transition:width .1s linear;width:0%"></span></span>
+<span style="flex:1;height:2px;background:rgba(246,238,224,.28);display:block;overflow:hidden"><span id="soins-fill-1" style="display:block;height:100%;background:#F6EEE0;transition:width .1s linear;width:0%"></span></span>
+<span style="flex:1;height:2px;background:rgba(246,238,224,.28);display:block;overflow:hidden"><span id="soins-fill-2" style="display:block;height:100%;background:#F6EEE0;transition:width .1s linear;width:0%"></span></span>
+</div>
+</div>
+</section>
+
+<section id="apropos" style="background:#405035;color:#F6EEE0;padding:clamp(56px,7vw,104px) clamp(20px,4vw,64px)">
+<div style="max-width:1240px;margin:0 auto;display:flex;gap:clamp(32px,5vw,80px);align-items:center;flex-wrap:wrap">
+<div style="flex:1 1 320px;min-width:280px;height:min(560px,62vw);min-height:380px;border-radius:4px;overflow:hidden"><img src="assets/nathalie-portrait.webp" alt="Nathalie, réflexologue" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+<div style="flex:1 1 380px;min-width:300px;display:flex;flex-direction:column;gap:24px">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#A9B39A">À propos</span>
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(29px,3.8vw,46px);line-height:1.06;color:#F6EEE0">Nathalie,<br><span style="color:#D9D8C0">réflexologue</span></h2>
+<p style="margin:0;font-size:16.5px;line-height:1.8;color:#E0DECB;max-width:48ch">Certifiée en réflexologie plantaire, palmaire, crânienne et Dien Chan, je reçois en cabinet dans un espace pensé pour le calme. Mon travail n'est pas de soigner à votre place : il est de vous rendre l'accès à vos propres ressources.</p>
+<p style="margin:0;font-size:16.5px;line-height:1.8;color:#E0DECB;max-width:48ch">Je reçois souvent des personnes qui dorment mal, qui se sentent débordées, ou qui traversent une période un peu plus difficile. Mon rôle est de leur offrir une vraie pause, rien que pour elles.</p>
+<div style="display:flex;gap:36px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(246,238,224,.22)">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'Libre Caslon Display',serif;font-size:34px;line-height:1;color:#F6EEE0">1 an</span><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#A9B39A">de pratique</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'Libre Caslon Display',serif;font-size:34px;line-height:1;color:#F6EEE0">4</span><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#A9B39A">techniques certifiées</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'Libre Caslon Display',serif;font-size:34px;line-height:1;color:#F6EEE0">5 j / 7</span><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#A9B39A">mardi au samedi</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="reserver" style="padding:clamp(64px,9vw,120px) clamp(20px,4vw,64px)">
+<div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Réservation</span>
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(27px,3.2vw,39px);line-height:1.08;color:#2F3B27">Choisir son créneau</h2>
+<p style="margin:0;max-width:48ch;font-size:15.5px;line-height:1.75;color:#5A5F4C">Sélectionnez une date, puis un horaire disponible. Confirmation immédiate par email.</p>
+</div>
+<div style="max-width:1080px;margin:0 auto;background:#EDE7D7;border:1px solid #E0D7C4;border-radius:6px;padding:clamp(20px,3vw,36px);display:flex;gap:clamp(20px,3vw,36px);flex-wrap:wrap">
+
+<div style="flex:1 1 320px;min-width:280px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<button id="cal-prev" aria-label="Mois précédent" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</button>
+<span id="cal-month-label" style="font-family:'Libre Caslon Display',serif;font-size:19px;color:#2F3B27;text-transform:capitalize"></span>
+<button id="cal-next" aria-label="Mois suivant" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8A8B78;text-align:center">
+<span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+</div>
+<div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
+<div style="display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.6;color:#5A5F4C;padding-top:10px;border-top:1px solid #DED4BF">
+<span>Mardi à vendredi · 10 h – 20 h</span>
+<span>Samedi · 9 h – 12 h</span>
+<span style="color:#8A8B78">Fermé dimanche et lundi</span>
+<span style="display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:9px 14px;background:#F3E9D2;border:1px solid #E0CFA0;border-radius:999px;font-size:12.5px;color:#6B5A2E;width:fit-content">⚠️ Paiement uniquement en espèces sur place</span>
+<p style="margin:6px 0 0;font-size:13.5px;line-height:1.6;color:#5A5F4C">De plus en plus de mutuelles remboursent les séances de réflexologie. N'hésitez pas à consulter la vôtre, une facture vous est fournie sur demande.</p>
+<p style="margin:0;font-size:13.5px;line-height:1.6;color:#5A5F4C">Paiement en espèces à la fin de la séance. Facture disponible sur simple demande.</p>
+</div>
+</div>
+
+<div id="slots-panel" style="flex:1 1 260px;min-width:240px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:24px">
+<span id="slots-label" style="font-size:13px;letter-spacing:.06em;color:#6B6F5B">Choisissez d'abord une date</span>
+<div id="cal-slots" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;max-height:220px;overflow-y:auto;padding-right:4px"></div>
+
+<div id="care-type" style="display:none;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid #DED4BF">
+<span style="font-size:13px;letter-spacing:.06em;color:#6B6F5B">Quel soin souhaitez-vous ?</span>
+<div style="display:flex;flex-direction:column;gap:8px">
+<button type="button" class="care-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-care="Réflexologie plantaire" style="padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left">Réflexologie plantaire</button>
+<button type="button" class="care-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-care="Réflexologie palmaire" style="padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left">Réflexologie palmaire</button>
+<button type="button" class="care-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-care="Réflexologie crânienne" style="padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left">Réflexologie crânienne</button>
+<button type="button" class="care-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-care="Dien Chan" style="padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left">Dien Chan</button>
+<button type="button" class="care-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-care="Je ne sais pas encore" style="padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left">Je ne sais pas encore</button>
+</div>
+</div>
+
+<div id="duration-type" style="display:none;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid #DED4BF">
+<span style="font-size:13px;letter-spacing:.06em;color:#6B6F5B">Quelle durée ?</span>
+<div style="display:flex;flex-direction:column;gap:8px">
+<button type="button" class="duration-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-duration="30 minutes · 35 €" style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left"><span>30 minutes</span><span style="font-weight:500">35 €</span></button>
+<button type="button" class="duration-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-duration="1 heure · 50 €" style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left"><span>1 heure</span><span style="font-weight:500">50 €</span></button>
+<button type="button" class="duration-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-duration="2 heures · 75 €" style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left"><span>2 heures</span><span style="font-weight:500">75 €</span></button>
+<button type="button" class="duration-option hoverable" data-hover="background:#405035;color:#F6EEE0" data-duration="Forfait 3 séances d'1 heure · 140 €" style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer;text-align:left"><span>Forfait 3 séances d'1 h</span><span style="font-weight:500">140 €</span></button>
+</div>
+<span style="font-size:12px;color:#8A8B78">Le forfait bloque ce créneau pour la première des 3 séances ; les deux suivantes se planifient ensuite avec Nathalie.</span>
+</div>
+
+<form id="booking-form" style="display:none;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid #DED4BF">
+<div id="booking-recap" style="font-size:14px;color:#2F3B27;font-weight:500"></div>
+<input id="booking-nom" type="text" required placeholder="Prénom et nom" style="padding:12px 14px;background:#FDFBF6;border:1px solid #D8CEB9;border-radius:2px;font-family:'Work Sans',sans-serif;font-size:14px;color:#23281E;min-height:44px">
+<input id="booking-tel" type="tel" required placeholder="06 29 56 35 70" style="padding:12px 14px;background:#FDFBF6;border:1px solid #D8CEB9;border-radius:2px;font-family:'Work Sans',sans-serif;font-size:14px;color:#23281E;min-height:44px">
+<input id="booking-email" type="email" required placeholder="vous@email.fr" style="padding:12px 14px;background:#FDFBF6;border:1px solid #D8CEB9;border-radius:2px;font-family:'Work Sans',sans-serif;font-size:14px;color:#23281E;min-height:44px">
+<button type="submit" id="booking-submit-btn" class="hoverable" data-hover="background:#2F3B27" style="padding:14px 24px;background:#405035;color:#F6EEE0;border:none;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;min-height:46px;cursor:pointer;margin-top:4px">Confirmer la demande</button>
+<span id="booking-error" style="display:none;color:#a03a3a;font-size:13px"></span>
+</form>
+<div id="booking-confirmed" style="display:none;padding:16px;background:#405035;color:#F6EEE0;border-radius:4px;font-size:14px;line-height:1.6"></div>
+</div>
+
+</div>
+</section>
+
+<section style="padding:clamp(56px,7vw,96px) clamp(20px,4vw,64px);background:#FDFBF6;border-top:1px solid #EDE5D6;border-bottom:1px solid #EDE5D6">
+<div style="max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Certifications</span>
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(26px,3.2vw,38px);line-height:1.1;color:#2F3B27">Diplômes &amp; formations</h2>
+</div>
+<div style="display:flex;gap:10px">
+<button id="dipl-prev" aria-label="Diplôme précédent" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</button>
+<button id="dipl-next" aria-label="Diplôme suivant" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+</button>
+</div>
+</div>
+<div id="dipl-track" style="display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding-bottom:10px;-webkit-overflow-scrolling:touch">
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/diplome-plantaire.webp" alt="Attestation de formation en réflexologie plantaire" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Réflexologie plantaire · <a href="https://formabelle.fr/" target="_blank" rel="noopener noreferrer" style="color:#405035;text-decoration:underline">FormaBelle</a></figcaption>
+</figure>
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/diplome-palmaire.webp" alt="Attestation de formation en réflexologie palmaire" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Réflexologie palmaire · <a href="https://formabelle.fr/" target="_blank" rel="noopener noreferrer" style="color:#405035;text-decoration:underline">FormaBelle</a></figcaption>
+</figure>
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/diplome-dien-chan.webp" alt="Attestation de formation Dien Chan (réflexologie faciale)" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Réflexologie faciale Dien Chan · <a href="https://formabelle.fr/" target="_blank" rel="noopener noreferrer" style="color:#405035;text-decoration:underline">FormaBelle</a></figcaption>
+</figure>
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/diplome-massage-bien-etre.webp" alt="Certificat de réalisation, pratiquer le massage bien-être" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Praticienne en massage bien-être · École Internationale du Spa</figcaption>
+</figure>
+</div>
+</div>
+</section>
+
+<section style="padding:clamp(56px,8vw,110px) clamp(20px,4vw,64px);background:#405035">
+<div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:26px;align-items:center;text-align:center">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#A9B39A">Elles en parlent</span>
+
+<div id="testi-track" style="position:relative;width:100%;min-height:150px">
+<div class="testi-slide" data-testi="0" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:18px;transition:opacity .5s ease;opacity:1">
+<blockquote style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-style:italic;font-size:clamp(22px,2.8vw,34px);line-height:1.36;color:#F6EEE0">« Je suis venue pour mon sommeil, sans trop y croire. Trois séances plus tard, je me rendors sans y penser, et je repars du cabinet plus légère chaque fois. »</blockquote>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:50%;flex:0 0 auto;background:rgba(246,238,224,.14);border:1px solid rgba(246,238,224,.34);display:flex;align-items:center;justify-content:center;font-family:'Libre Caslon Display',serif;font-size:24px;color:#F6EEE0">C</div>
+<div style="display:flex;flex-direction:column;gap:3px;text-align:left"><span style="font-size:15px;color:#F6EEE0">Claire M.</span><span style="font-size:12.5px;color:#A9B39A">Séances d'1 heure, depuis 2024</span></div>
+</div>
+</div>
+<div class="testi-slide" data-testi="1" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:18px;transition:opacity .5s ease;opacity:0">
+<blockquote style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-style:italic;font-size:clamp(22px,2.8vw,34px);line-height:1.36;color:#F6EEE0">« Nathalie prend vraiment le temps d'écouter avant chaque séance. Je ressors du cabinet détendue, avec des conseils simples à appliquer chez moi. »</blockquote>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:50%;flex:0 0 auto;background:rgba(246,238,224,.14);border:1px solid rgba(246,238,224,.34);display:flex;align-items:center;justify-content:center;font-family:'Libre Caslon Display',serif;font-size:24px;color:#F6EEE0">S</div>
+<div style="display:flex;flex-direction:column;gap:3px;text-align:left"><span style="font-size:15px;color:#F6EEE0">Sophie R.</span><span style="font-size:12.5px;color:#A9B39A">Réflexologie plantaire, depuis 2025</span></div>
+</div>
+</div>
+<div class="testi-slide" data-testi="2" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:18px;transition:opacity .5s ease;opacity:0">
+<blockquote style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-style:italic;font-size:clamp(22px,2.8vw,34px);line-height:1.36;color:#F6EEE0">« Le cabinet est calme, chaleureux, exactement ce qu'il me fallait pour décrocher. Je recommande sans hésiter. »</blockquote>
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:50%;flex:0 0 auto;background:rgba(246,238,224,.14);border:1px solid rgba(246,238,224,.34);display:flex;align-items:center;justify-content:center;font-family:'Libre Caslon Display',serif;font-size:24px;color:#F6EEE0">M</div>
+<div style="display:flex;flex-direction:column;gap:3px;text-align:left"><span style="font-size:15px;color:#F6EEE0">Marie D.</span><span style="font-size:12.5px;color:#A9B39A">Dien Chan, depuis 2025</span></div>
+</div>
+</div>
+</div>
+
+<div id="testi-dots" style="display:flex;gap:8px;margin-top:4px">
+<button type="button" class="testi-dot" data-dot="0" aria-label="Avis 1" style="width:7px;height:7px;padding:0;border:none;border-radius:50%;background:#F6EEE0;cursor:pointer"></button>
+<button type="button" class="testi-dot" data-dot="1" aria-label="Avis 2" style="width:7px;height:7px;padding:0;border:none;border-radius:50%;background:rgba(246,238,224,.32);cursor:pointer"></button>
+<button type="button" class="testi-dot" data-dot="2" aria-label="Avis 3" style="width:7px;height:7px;padding:0;border:none;border-radius:50%;background:rgba(246,238,224,.32);cursor:pointer"></button>
+</div>
+<a href="#contact" style="margin-top:10px;font-size:13px;letter-spacing:.08em;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:3px">Vous avez fait une séance ? Laisser un avis →</a>
+</div>
+</section>
+
+<section style="padding:clamp(56px,7vw,96px) clamp(20px,4vw,64px);background:#FDFBF6;border-top:1px solid #EDE5D6;border-bottom:1px solid #EDE5D6">
+<div style="max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Le lieu</span>
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(26px,3.2vw,38px);line-height:1.1;color:#2F3B27">Le cabinet</h2>
+</div>
+<div style="display:flex;gap:10px">
+<button id="cabinet-prev" aria-label="Photo précédente" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+</button>
+<button id="cabinet-next" aria-label="Photo suivante" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:1px solid #405035;color:#405035;background:none;cursor:pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+</button>
+</div>
+</div>
+<div id="cabinet-track" style="display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding-bottom:10px;-webkit-overflow-scrolling:touch">
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/cabinet-coin-lecture.webp" alt="Coin lecture du cabinet, fauteuil en rotin violet" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Coin lecture</figcaption>
+</figure>
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/cabinet-table-cactus.webp" alt="Table de massage, cactus et statuette Buddha" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Table de soin</figcaption>
+</figure>
+<figure style="margin:0;flex:0 0 auto;width:min(720px,88vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:14px">
+<div style="border:1px solid #E6DECE;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:#F6EEE0"><img src="assets/cabinet-table-fenetre.webp" alt="Table de massage devant la fenêtre du cabinet" style="width:100%;height:100%;object-fit:contain;display:block"></div>
+<figcaption style="font-size:14px;line-height:1.5;color:#5A5F4C">Vue sur la fenêtre</figcaption>
+</figure>
+</div>
+</div>
+</section>
+
+<section id="venir" style="padding:clamp(64px,9vw,120px) clamp(20px,4vw,64px)">
+<div style="max-width:1240px;margin:0 auto;display:flex;gap:clamp(24px,3vw,40px);flex-wrap:wrap">
+<div style="flex:1 1 380px;min-width:300px;min-height:340px;border:1px solid #E6DECE;border-radius:4px;overflow:hidden;position:relative">
+<iframe data-src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2447.7409180703476!2d4.700265960092629!3d44.016707731505605!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1sfr!2sfr!4v1787669800105!5m2!1sfr!2sfr" width="100%" height="100%" style="border:0;display:block;min-height:340px" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<div class="maps-consent-placeholder" style="display:none;position:absolute;inset:0;background:#F6EEE0;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center">
+<span style="font-size:13.5px;line-height:1.6;color:#5A5F4C;max-width:36ch">La carte Google Maps nécessite votre consentement aux cookies tiers.</span>
+<button type="button" onclick="window.TR_openCookieSettings()" style="height:40px;padding:0 18px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Gérer mes préférences</button>
+</div>
+</div>
+<div style="flex:1 1 320px;min-width:280px;display:flex;flex-direction:column;gap:24px">
+<span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Accès &amp; horaires</span>
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(27px,3.2vw,39px);line-height:1.08;color:#2F3B27">Venir au cabinet</h2>
+<div style="display:flex;flex-direction:column;gap:0;border-top:1px solid #E6DECE">
+<div style="display:flex;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid #E6DECE;font-size:15.5px;color:#3E4335"><span>Mardi à vendredi</span><span style="color:#405035">10 h – 20 h</span></div>
+<div style="display:flex;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid #E6DECE;font-size:15.5px;color:#3E4335"><span>Samedi</span><span style="color:#405035">9 h – 12 h</span></div>
+<div style="display:flex;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid #E6DECE;font-size:15.5px;color:#8A8B78"><span>Dimanche &amp; lundi</span><span>Fermé</span></div>
+</div>
+<div id="contact" style="display:flex;flex-direction:column;gap:10px;font-size:15.5px;line-height:1.7;color:#3E4335">
+<span>543 chemin de Valinière, 30126 Tavel</span>
+<a href="tel:+33629563570" style="color:#405035">06 29 56 35 70</a>
+<a href="mailto:contact@tr-reflexologie.fr" style="color:#405035">contact@tr-reflexologie.fr</a>
+</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<a href="#venir" class="hoverable" data-hover="background:#2F3B27" style="display:inline-flex;align-items:center;padding:14px 26px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;min-height:46px">Itinéraire</a>
+<a href="#venir" class="hoverable" data-hover="background:#405035;color:#F6EEE0" style="display:inline-flex;align-items:center;padding:14px 26px;border:1px solid #405035;color:#405035;border-radius:999px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;min-height:46px">Voir la fiche Google</a>
+</div>
+</div>
+</div>
+</section>
+
+<section style="background:#405035;color:#F6EEE0;padding:clamp(56px,7vw,100px) clamp(20px,4vw,64px);text-align:center">
+<div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:24px;align-items:center">
+<h2 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(29px,3.8vw,45px);line-height:1.1;color:#F6EEE0">Le corps attend rarement<br><span style="color:#D9D8C0">le bon moment.</span></h2>
+<p style="margin:0;max-width:46ch;font-size:16.5px;line-height:1.75;color:#DCDAC6">Réservez une première séance de 30 minutes, ou appelez simplement pour en parler.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+<a href="#reserver" class="hoverable" data-hover="background:#fff" style="display:inline-flex;align-items:center;padding:16px 32px;background:#F6EEE0;color:#405035;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:48px">Prendre rendez-vous</a>
+<a href="tel:+33629563570" class="hoverable" data-hover="border-color:#F6EEE0" style="display:inline-flex;align-items:center;padding:16px 32px;border:1px solid rgba(246,238,224,.5);color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;min-height:48px">06 29 56 35 70</a>
+</div>
+</div>
+</section>
+
+<footer style="background:#F6EEE0;padding:clamp(48px,6vw,80px) clamp(20px,4vw,64px) 32px">
+<div style="max-width:1240px;margin:0 auto;display:flex;gap:clamp(28px,4vw,64px);flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid #E0D7C4">
+<div style="flex:1 1 280px;min-width:240px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:62px;width:auto;display:block;mix-blend-mode:multiply">
+<span style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#A8A995">Tavel · Gard</span>
+</div>
+<p style="margin:0;font-size:14.5px;line-height:1.75;color:#5A5F4C;max-width:32ch">Réflexologie plantaire, palmaire, crânienne et Dien Chan. Sur rendez-vous, du mardi au samedi matin.</p>
+<div style="display:flex;gap:10px">
+<a href="https://www.instagram.com/tr_reflexologie/" target="_blank" rel="noopener noreferrer" aria-label="TR Réflexologie sur Instagram" class="hoverable" data-hover="border-color:#405035" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #D8CEB9;border-radius:50%;font-size:12px;letter-spacing:.06em;color:#405035">IG</a>
+<a href="https://www.facebook.com/profile.php?id=61594053410022" target="_blank" rel="noopener noreferrer" aria-label="TR Réflexologie sur Facebook" class="hoverable" data-hover="border-color:#405035" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #D8CEB9;border-radius:50%;font-size:12px;letter-spacing:.06em;color:#405035">FB</a>
+</div>
+</div>
+<div style="flex:1 1 160px;min-width:150px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Les soins</span>
+<a href="soins/plantaire.html" style="font-size:14.5px;color:#3E4335">Plantaire</a><a href="soins/palmaire.html" style="font-size:14.5px;color:#3E4335">Palmaire</a><a href="soins/cranienne.html" style="font-size:14.5px;color:#3E4335">Crânienne</a><a href="soins/dien-chan.html" style="font-size:14.5px;color:#3E4335">Dien Chan</a>
+</div>
+<div style="flex:1 1 160px;min-width:150px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Pratique</span>
+<a href="#reserver" style="font-size:14.5px;color:#3E4335">Tarifs</a><a href="bons-cadeaux.html" style="font-size:14.5px;color:#3E4335">Bons cadeaux</a><a href="#reserver" style="font-size:14.5px;color:#3E4335">Réserver</a>
+</div>
+<div style="flex:1 1 220px;min-width:200px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Contact</span>
+<span style="font-size:14.5px;line-height:1.6;color:#3E4335">543 chemin de Valinière<br>30126 Tavel</span>
+<a href="tel:+33629563570" style="font-size:14.5px;color:#405035">06 29 56 35 70</a>
+<a href="mailto:contact@tr-reflexologie.fr" style="font-size:14.5px;color:#405035">contact@tr-reflexologie.fr</a>
+</div>
+</div>
+<div style="max-width:1240px;margin:0 auto;padding-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#8A8B78">
+<span>© 2026 TR Réflexologie · Tavel (30). La réflexologie est une technique de bien-être et ne remplace pas un avis médical.</span>
+<div style="display:flex;gap:20px"><a href="mentions-legales.html" style="color:#8A8B78">Mentions légales</a><a href="confidentialite.html" style="color:#8A8B78">Confidentialité</a><a href="#" onclick="window.TR_openCookieSettings();return false" style="color:#8A8B78">Cookies</a></div>
+</div>
+</footer>
+
+</div>
+
+<script>
+// Calendly-style booking widget (front-end only, wire submit to the CRM/booking API separately)
+(function () {
+  const grid = document.getElementById('cal-grid');
+  const monthLabel = document.getElementById('cal-month-label');
+  const prevBtn = document.getElementById('cal-prev');
+  const nextBtn = document.getElementById('cal-next');
+  const slotsWrap = document.getElementById('cal-slots');
+  const slotsLabel = document.getElementById('slots-label');
+  const form = document.getElementById('booking-form');
+  const recap = document.getElementById('booking-recap');
+  const confirmed = document.getElementById('booking-confirmed');
+  if (!grid || !monthLabel) return;
+
+  const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth();
+  let selectedDate = null;
+
+  function slotsForDay(dow) {
+    // dow: 0=dim 1=lun 2=mar 3=mer 4=jeu 5=ven 6=sam
+    if (dow >= 2 && dow <= 5) {
+      const s = [];
+      for (let h = 10; h < 20; h++) { s.push(h + 'h00'); s.push(h + 'h30'); }
+      return s;
+    }
+    if (dow === 6) return ['9h00', '9h30', '10h00', '10h30', '11h00', '11h30'];
+    return [];
+  }
+
+  function renderCalendar() {
+    monthLabel.textContent = MONTHS[viewMonth] + ' ' + viewYear;
+    grid.innerHTML = '';
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    let startOffset = firstDay.getDay() - 1; // Monday = 0
+    if (startOffset < 0) startOffset = 6;
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+    for (let i = 0; i < startOffset; i++) {
+      const empty = document.createElement('span');
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(viewYear, viewMonth, d);
+      const dow = date.getDay();
+      const isPast = date < today;
+      const isOpen = slotsForDay(dow).length > 0;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = String(d);
+      const isSelected = selectedDate && date.getTime() === selectedDate.getTime();
+      const disabled = isPast || !isOpen;
+      btn.disabled = disabled;
+      btn.style.cssText = 'aspect-ratio:1;border-radius:50%;border:none;font-family:"Work Sans",sans-serif;font-size:13px;cursor:' + (disabled ? 'default' : 'pointer') + ';background:' + (isSelected ? '#405035' : 'transparent') + ';color:' + (isSelected ? '#F6EEE0' : (disabled ? '#C7C2AE' : '#3E4335')) + ';transition:background .15s ease,color .15s ease';
+      if (!disabled) {
+        btn.addEventListener('mouseenter', () => { if (!isSelected) btn.style.background = '#DED4BF'; });
+        btn.addEventListener('mouseleave', () => { if (!isSelected) btn.style.background = 'transparent'; });
+        btn.addEventListener('click', () => {
+          selectedDate = date;
+          renderCalendar();
+          renderSlots(date);
+          const panel = document.getElementById('slots-panel');
+          if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+      grid.appendChild(btn);
+    }
+  }
+
+  const careType = document.getElementById('care-type');
+  const durationType = document.getElementById('duration-type');
+  let selectedDateLabel = '';
+  let selectedSlot = '';
+  let selectedCare = '';
+
+  function renderSlots(date) {
+    const dow = date.getDay();
+    const slots = slotsForDay(dow);
+    const dateLabel = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    slotsLabel.textContent = 'Créneaux du ' + dateLabel;
+    slotsWrap.innerHTML = '';
+    careType.style.display = 'none';
+    durationType.style.display = 'none';
+    form.style.display = 'none';
+    confirmed.style.display = 'none';
+
+    slots.forEach(slot => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = slot;
+      btn.className = 'hoverable';
+      btn.setAttribute('data-hover', 'background:#405035;color:#F6EEE0');
+      btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;text-align:center';
+      btn.addEventListener('click', () => {
+        selectedDateLabel = dateLabel;
+        selectedSlot = slot;
+        careType.style.display = 'flex';
+        durationType.style.display = 'none';
+        form.style.display = 'none';
+        confirmed.style.display = 'none';
+        careType.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      slotsWrap.appendChild(btn);
+    });
+  }
+
+  careType?.querySelectorAll('.care-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedCare = btn.getAttribute('data-care');
+      careType.style.display = 'none';
+      durationType.style.display = 'flex';
+      form.style.display = 'none';
+      confirmed.style.display = 'none';
+      durationType.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+
+  let selectedDuration = '';
+  durationType?.querySelectorAll('.duration-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDuration = btn.getAttribute('data-duration');
+      recap.textContent = selectedCare + ' (' + selectedDuration + '), le ' + selectedDateLabel + ' à ' + selectedSlot;
+      durationType.style.display = 'none';
+      form.style.display = 'flex';
+      confirmed.style.display = 'none';
+      form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+
+  const errorEl = document.getElementById('booking-error');
+  const submitBtn = document.getElementById('booking-submit-btn');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!selectedDate) return;
+    errorEl.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Envoi...';
+
+    const priceMatch = selectedDuration.match(/(\d+)\s*€/);
+    const prix = priceMatch ? Number(priceMatch[1]) : null;
+
+    const payload = {
+      nom_client: document.getElementById('booking-nom').value,
+      telephone: document.getElementById('booking-tel').value,
+      email: document.getElementById('booking-email').value,
+      soin: selectedCare,
+      duree: selectedDuration,
+      prix,
+      date: selectedDate.toISOString().slice(0, 10),
+      heure: selectedSlot,
+      statut: 'en_attente',
+      source: 'site'
+    };
+
+    try {
+      const sb = window.getSupabase();
+      const { error } = await sb.from('rendez_vous').insert(payload);
+      if (error) throw error;
+      form.style.display = 'none';
+      confirmed.style.display = 'block';
+      confirmed.textContent = 'Demande envoyée, ' + recap.textContent + '. Vous recevrez une confirmation par email.';
+    } catch (err) {
+      errorEl.textContent = "Erreur d'envoi, réessayez ou appelez le cabinet.";
+      errorEl.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirmer la demande';
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+  nextBtn.addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+
+  renderCalendar();
+})();
+
+// Testimonials auto-rotating carousel
+(function () {
+  const slides = Array.from(document.querySelectorAll('.testi-slide'));
+  const dots = Array.from(document.querySelectorAll('.testi-dot'));
+  if (!slides.length) return;
+  let current = 0;
+  let timer = null;
+
+  function show(index) {
+    current = index;
+    slides.forEach((el, i) => { el.style.opacity = i === index ? '1' : '0'; });
+    dots.forEach((el, i) => { el.style.background = i === index ? '#F6EEE0' : 'rgba(246,238,224,.32)'; });
+  }
+
+  function next() { show((current + 1) % slides.length); }
+
+  function restartTimer() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(next, 6000);
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { show(i); restartTimer(); });
+  });
+
+  show(0);
+  restartTimer();
+})();
+
+// Cabinet photos carousel
+(function () {
+  const track = document.getElementById('cabinet-track');
+  const prev = document.getElementById('cabinet-prev');
+  const next = document.getElementById('cabinet-next');
+  if (!track || !prev || !next) return;
+  function cardStep() {
+    const card = track.querySelector('figure');
+    if (!card) return 720;
+    return card.getBoundingClientRect().width + 28;
+  }
+  prev.addEventListener('click', () => track.scrollBy({ left: -cardStep(), behavior: 'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left: cardStep(), behavior: 'smooth' }));
+})();
+
+// Diploma carousel
+(function () {
+  const track = document.getElementById('dipl-track');
+  const prev = document.getElementById('dipl-prev');
+  const next = document.getElementById('dipl-next');
+  if (!track || !prev || !next) return;
+  function cardStep() {
+    const card = track.querySelector('figure');
+    if (!card) return 720;
+    return card.getBoundingClientRect().width + 28;
+  }
+  prev.addEventListener('click', () => track.scrollBy({ left: -cardStep(), behavior: 'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left: cardStep(), behavior: 'smooth' }));
+})();
+
+// Mobile burger menu
+(function () {
+  const btn = document.getElementById('burger-btn');
+  const closeBtn = document.getElementById('burger-close');
+  const nav = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('mobile-nav-overlay');
+  if (!btn || !nav || !overlay) return;
+
+  function open() {
+    nav.style.display = 'flex';
+    overlay.style.display = 'block';
+    btn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    nav.style.display = 'none';
+    overlay.style.display = 'none';
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  btn.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  nav.querySelectorAll('[data-mobile-link]').forEach(a => a.addEventListener('click', close));
+})();
+
+// "Les soins" dropdown — click-to-toggle for touch/keyboard, hover already handled by CSS
+(function () {
+  const menu = document.querySelector('.nav-soins-menu');
+  const trigger = document.querySelector('.nav-soins-btn');
+  if (!menu || !trigger) return;
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('open');
+  });
+  document.addEventListener('click', () => menu.classList.remove('open'));
+})();
+
+// Hover effects (replaces dc-runtime style-hover attribute)
+document.querySelectorAll('.hoverable').forEach(el => {
+  const hoverStyle = el.getAttribute('data-hover');
+  if (!hoverStyle) return;
+  const rules = hoverStyle.split(';').filter(Boolean).map(r => r.split(':').map(s => s.trim()));
+  const original = rules.map(([prop]) => el.style[camelCase(prop)]);
+  function camelCase(s) { return s.replace(/-([a-z])/g, (_, c) => c.toUpperCase()); }
+  el.addEventListener('mouseenter', () => rules.forEach(([prop, val]) => el.style[camelCase(prop)] = val));
+  el.addEventListener('mouseleave', () => rules.forEach(([prop], i) => el.style[camelCase(prop)] = original[i]));
+});
+
+// Scroll-driven chapter switch (3 separate looping clips, one per massage)
+(function () {
+  const section = document.getElementById('soins');
+  const videos = [document.getElementById('soins-video-0'), document.getElementById('soins-video-1'), document.getElementById('soins-video-2')];
+  const chapters = [document.getElementById('soins-ch-0'), document.getElementById('soins-ch-1'), document.getElementById('soins-ch-2')];
+  const fills = [document.getElementById('soins-fill-0'), document.getElementById('soins-fill-1'), document.getElementById('soins-fill-2')];
+  let lastIdx = -1;
+  let lastP = -1;
+
+  videos.forEach((v, i) => { if (v) { v.play().catch(() => {}); if (i !== 0) v.pause(); } });
+
+  function measure() {
+    if (!section) return;
+    const r = section.getBoundingClientRect();
+    const total = r.height - window.innerHeight;
+    const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+    const idx = Math.min(2, Math.floor(p * 3));
+    const local = Math.min(1, Math.max(0, p * 3 - idx));
+
+    if (idx !== lastIdx) {
+      lastIdx = idx;
+      videos.forEach((v, i) => {
+        if (!v) return;
+        if (i === idx) {
+          v.style.opacity = '1';
+          v.play().catch(() => {});
+        } else {
+          v.style.opacity = '0';
+          v.pause();
+        }
+      });
+      chapters.forEach((el, i) => {
+        if (!el) return;
+        const active = i === idx;
+        el.style.opacity = active ? '1' : '0';
+        el.style.transform = active ? 'translateY(0)' : 'translateY(22px)';
+        el.style.pointerEvents = active ? 'auto' : 'none';
+      });
+    }
+
+    if (Math.abs(p - lastP) > 0.002) {
+      lastP = p;
+      fills.forEach((el, i) => {
+        if (!el) return;
+        el.style.width = (i < idx ? 100 : i === idx ? Math.round(local * 100) : 0) + '%';
+      });
+    }
+    requestAnimationFrame(measure);
+  }
+  requestAnimationFrame(measure);
+})();
+</script>
+
+<script>window.TR_ROOT = '';</script>
+<script src="assets/cookie-consent.js"></script>
+
+<script src="assets/header-scroll.js"></script>
+</body>
+</html>

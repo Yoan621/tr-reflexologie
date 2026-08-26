@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog — Espace praticienne — TR Réflexologie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/bo-common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+</head>
+<body>
+
+<div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#405035">
+<form id="login-form" style="width:min(340px,90vw);background:#F6EEE0;border-radius:6px;padding:36px 30px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;mix-blend-mode:multiply">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Espace praticienne</span>
+<input id="login-username" type="text" required placeholder="Identifiant" autocomplete="username" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<input id="login-password" type="password" required placeholder="Mot de passe" autocomplete="current-password" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<button type="submit" id="login-btn" style="width:100%;height:46px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Se connecter</button>
+<span id="login-error" style="display:none;color:#a03a3a;font-size:12.5px"></span>
+</form>
+</div>
+
+<div id="dashboard" style="display:none;min-height:100vh;background:#F6EEE0">
+
+<aside style="flex:0 0 246px;background:#405035;color:#F6EEE0;padding:26px 20px;display:flex;flex-direction:column;gap:30px;position:sticky;top:0;height:100vh">
+<div style="display:flex;align-items:center;gap:10px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;display:block;background:#F6EEE0;border-radius:3px;padding:2px">
+<span style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Espace<br>praticienne</span>
+</div>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<a class="navbtn" data-tab="dashboard" href="dashboard.html">Dashboard</a>
+<a class="navbtn" data-tab="agenda" href="agenda.html">Agenda</a>
+<a class="navbtn" data-tab="clients" href="clients.html">Fiches clients</a>
+<a class="navbtn" data-tab="factures" href="factures.html">Factures</a>
+<a class="navbtn" data-tab="bons" href="bons.html">Bons d'achat</a>
+<a class="navbtn" data-tab="blog" href="blog.html">Blog</a>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid rgba(246,238,224,.2)">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#5B6B4C;font-size:13px">N</span>
+<span style="display:flex;flex-direction:column;line-height:1.3"><span style="font-size:13.5px">Nathalie</span><span style="font-size:11px;color:#A9B39A">Réflexologue</span></span>
+</div>
+<button type="button" id="logout-btn" style="background:none;border:none;color:#A9B39A;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Sortir</button>
+</div>
+</div>
+</aside>
+
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+<header id="site-header" style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px clamp(20px,3vw,38px);background:#FDFBF6;border-bottom:1px solid #E6DECE;flex-wrap:wrap;position:sticky;top:0;z-index:20;transition:transform .35s ease">
+<div style="display:flex;flex-direction:column;gap:5px">
+<h1 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:29px;line-height:1.1;color:#2F3B27">Blog</h1>
+<span style="font-size:12.5px;color:#8A8B78">Créer et publier un article sur le site</span>
+</div>
+</header>
+
+<div style="padding:clamp(20px,3vw,34px);display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+
+<section style="flex:2 1 620px;min-width:480px;display:flex;flex-direction:column;gap:16px">
+
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:22px 24px;display:flex;flex-direction:column;gap:16px">
+<label style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8B78">Titre de l'article (H1)</span>
+<input id="blog-h1" type="text" placeholder="Titre de l'article" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:14px 16px;font-family:'Libre Caslon Display',serif;font-size:26px;color:#2F3B27">
+</label>
+<label style="display:flex;flex-direction:column;gap:6px">
+<span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8B78">URL / slug</span>
+<div style="display:flex;align-items:center;gap:4px;font-size:13px;color:#8A8B78">
+<span>tr-reflexologie.fr/blog/</span>
+<input id="blog-slug" type="text" placeholder="titre-de-larticle" style="flex:1;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+</div>
+</label>
+</div>
+
+<div id="blog-sections" style="display:flex;flex-direction:column;gap:14px"></div>
+
+<button type="button" id="blog-add-section" style="align-self:flex-start;height:44px;padding:0 20px;border:1px dashed #9AA688;background:transparent;color:#405035;border-radius:3px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">+ Ajouter une section (H2)</button>
+
+<div style="display:flex;gap:10px;padding-top:8px;align-items:center">
+<button type="button" id="blog-publish-btn" style="height:46px;padding:0 26px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Publier l'article</button>
+<button type="button" id="blog-draft-btn" style="height:46px;padding:0 26px;border:1px solid #405035;background:transparent;color:#405035;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Enregistrer le brouillon</button>
+<button type="button" id="blog-new-btn" style="height:46px;padding:0 18px;border:none;background:transparent;color:#8A8B78;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">+ Nouvel article</button>
+<span id="blog-status-msg" style="font-size:12.5px;color:#5A5F4C"></span>
+</div>
+
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:20px 22px;display:flex;flex-direction:column;gap:12px;margin-top:8px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Articles</span>
+<div id="blog-articles-list" class="empty-state" style="padding:20px 8px">Aucun article pour l'instant.</div>
+</div>
+
+</section>
+
+<aside style="flex:1 1 320px;min-width:300px;display:flex;flex-direction:column;gap:16px">
+
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Image à la une</span>
+<div id="blog-featured-preview" style="aspect-ratio:16/10;border:1px dashed #C9C0AA;border-radius:4px;display:flex;align-items:center;justify-content:center;background:#F6EEE0;color:#8A8B78;font-size:12.5px;text-align:center;padding:10px;cursor:pointer">Cliquer pour choisir une image<br>1200 × 675 px recommandé</div>
+<input id="blog-featured-input" type="file" accept="image/*" style="display:none">
+<input id="blog-featured-alt" type="text" placeholder="Texte alternatif (SEO)" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:10px 12px;font-size:13px;color:#23281E">
+</div>
+
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Référencement (SEO)</span>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Meta titre</span>
+<input id="blog-meta-title" type="text" maxlength="60" placeholder="Titre affiché sur Google" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+<span id="blog-meta-title-count" style="font-size:10.5px;color:#A8A995">0 / 60</span>
+</label>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Meta description</span>
+<textarea id="blog-meta-desc" maxlength="160" rows="3" placeholder="Résumé affiché sous le titre dans les résultats Google" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E;resize:vertical"></textarea>
+<span id="blog-meta-desc-count" style="font-size:10.5px;color:#A8A995">0 / 160</span>
+</label>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Mots-clés (séparés par une virgule)</span>
+<input id="blog-meta-keywords" type="text" placeholder="réflexologie plantaire, sommeil, Tavel" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+</label>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Catégorie</span>
+<select id="blog-category" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+<option>Sommeil</option><option>Dien Chan</option><option>Pratique</option><option>Mutuelles</option><option>Réflexologie plantaire</option><option>Réflexologie palmaire</option><option>Réflexologie crânienne</option>
+</select>
+</label>
+</div>
+
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Balisage schéma (schema.org)</span>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Type de contenu</span>
+<select id="blog-schema-type" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+<option value="Article">Article</option>
+<option value="BlogPosting">BlogPosting</option>
+<option value="FAQPage">FAQPage</option>
+<option value="HowTo">HowTo (guide pratique)</option>
+</select>
+</label>
+<label style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Auteur</span>
+<input id="blog-schema-author" type="text" value="Nathalie Roudil" style="border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;padding:9px 10px;font-size:13px;color:#23281E">
+</label>
+<div style="display:flex;flex-direction:column;gap:5px">
+<span style="font-size:11.5px;color:#6B6F5B">Aperçu JSON-LD (généré automatiquement)</span>
+<pre id="blog-schema-preview" style="margin:0;padding:12px;background:#2F3B27;color:#DCE3D2;border-radius:3px;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-word">{}</pre>
+</div>
+</div>
+
+<div style="background:#405035;color:#F6EEE0;border-radius:4px;padding:20px 22px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Aperçu Google</span>
+<div style="background:#F6EEE0;border-radius:3px;padding:14px;display:flex;flex-direction:column;gap:3px">
+<span id="blog-google-url" style="font-size:12px;color:#5A5F4C">tr-reflexologie.fr › blog</span>
+<span id="blog-google-title" style="font-size:15px;color:#1a0dab;line-height:1.3">Titre de l'article</span>
+<span id="blog-google-desc" style="font-size:12.5px;color:#4d5156;line-height:1.5">La méta description apparaîtra ici au fur et à mesure de la saisie.</span>
+</div>
+</div>
+
+</aside>
+</div>
+
+</main>
+</div>
+
+<script src="assets/bo-common.js"></script>
+<script>
+const sb = BO.sb;
+BO.initNav('blog');
+
+const sectionsWrap = document.getElementById('blog-sections');
+const addSectionBtn = document.getElementById('blog-add-section');
+const newBtn = document.getElementById('blog-new-btn');
+const publishBtn = document.getElementById('blog-publish-btn');
+const draftBtn = document.getElementById('blog-draft-btn');
+const statusMsg = document.getElementById('blog-status-msg');
+const articlesListEl = document.getElementById('blog-articles-list');
+
+let editingId = null;
+let featuredFile = null;
+let featuredUrl = null;
+
+function addSection(h2 = '', content = '') {
+  const block = document.createElement('div');
+  block.className = 'h2block';
+  block.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center">' +
+      '<span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8B78">Section (H2)</span>' +
+      '<button type="button" class="blog-remove-section" style="border:none;background:none;color:#8A8B78;cursor:pointer;font-size:12px">Supprimer</button>' +
+    '</div>' +
+    '<input type="text" class="blog-h2-input" placeholder="Sous-titre H2" value="' + h2.replace(/"/g, '&quot;') + '" style="border:1px solid #D8CEB9;background:#F6EEE0;border-radius:2px;padding:11px 12px;font-family:\'Libre Caslon Display\',serif;font-size:19px;color:#2F3B27">' +
+    '<textarea rows="5" class="blog-content-input" placeholder="Contenu de la section…" style="border:1px solid #D8CEB9;background:#F6EEE0;border-radius:2px;padding:11px 12px;font-size:14px;line-height:1.6;color:#23281E;resize:vertical">' + content + '</textarea>';
+  block.querySelector('.blog-remove-section').addEventListener('click', () => block.remove());
+  sectionsWrap.appendChild(block);
+}
+addSectionBtn.addEventListener('click', () => addSection());
+
+function getSectionsData() {
+  return Array.from(sectionsWrap.querySelectorAll('.h2block')).map(b => ({
+    h2: b.querySelector('.blog-h2-input').value,
+    content: b.querySelector('.blog-content-input').value
+  }));
+}
+
+const preview = document.getElementById('blog-featured-preview');
+const fileInput = document.getElementById('blog-featured-input');
+preview.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  featuredFile = file;
+  const url = URL.createObjectURL(file);
+  preview.style.backgroundImage = 'url(' + url + ')';
+  preview.style.backgroundSize = 'cover';
+  preview.style.backgroundPosition = 'center';
+  preview.textContent = '';
+});
+
+const h1 = document.getElementById('blog-h1');
+const slug = document.getElementById('blog-slug');
+const metaTitle = document.getElementById('blog-meta-title');
+const metaTitleCount = document.getElementById('blog-meta-title-count');
+const metaDesc = document.getElementById('blog-meta-desc');
+const metaDescCount = document.getElementById('blog-meta-desc-count');
+const metaKeywords = document.getElementById('blog-meta-keywords');
+const category = document.getElementById('blog-category');
+const schemaType = document.getElementById('blog-schema-type');
+const schemaAuthor = document.getElementById('blog-schema-author');
+const schemaPreview = document.getElementById('blog-schema-preview');
+const featuredAlt = document.getElementById('blog-featured-alt');
+const googleUrl = document.getElementById('blog-google-url');
+const googleTitle = document.getElementById('blog-google-title');
+const googleDesc = document.getElementById('blog-google-desc');
+
+function slugify(s) {
+  return s.toLowerCase().trim()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function update() {
+  metaTitleCount.textContent = metaTitle.value.length + ' / 60';
+  metaDescCount.textContent = metaDesc.value.length + ' / 160';
+  googleUrl.textContent = 'tr-reflexologie.fr › blog › ' + (slug.value || slugify(h1.value) || 'titre-de-larticle');
+  googleTitle.textContent = metaTitle.value || h1.value || "Titre de l'article";
+  googleDesc.textContent = metaDesc.value || 'La méta description apparaîtra ici au fur et à mesure de la saisie.';
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': schemaType.value,
+    headline: h1.value || "Titre de l'article",
+    description: metaDesc.value || '',
+    author: { '@type': 'Person', name: schemaAuthor.value || 'Nathalie Roudil' },
+    publisher: { '@type': 'LocalBusiness', name: 'TR Réflexologie' },
+    mainEntityOfPage: 'https://tr-reflexologie.fr/blog/' + (slug.value || slugify(h1.value))
+  };
+  schemaPreview.textContent = JSON.stringify(schema, null, 2);
+}
+
+h1.addEventListener('input', () => { if (!slug.dataset.touched) slug.value = slugify(h1.value); update(); });
+slug.addEventListener('input', () => { slug.dataset.touched = '1'; update(); });
+[metaTitle, metaDesc, schemaType, schemaAuthor].forEach(el => el.addEventListener('input', update));
+update();
+
+function resetForm() {
+  editingId = null;
+  featuredFile = null;
+  featuredUrl = null;
+  h1.value = ''; slug.value = ''; slug.dataset.touched = '';
+  metaTitle.value = ''; metaDesc.value = ''; metaKeywords.value = '';
+  featuredAlt.value = '';
+  category.selectedIndex = 0; schemaType.value = 'Article';
+  preview.style.backgroundImage = '';
+  preview.textContent = 'Cliquer pour choisir une image\n1200 × 675 px recommandé';
+  sectionsWrap.innerHTML = '';
+  addSection();
+  statusMsg.textContent = '';
+  update();
+}
+newBtn.addEventListener('click', resetForm);
+
+async function loadArticleIntoForm(article) {
+  editingId = article.id;
+  featuredFile = null;
+  featuredUrl = article.image_une_url || null;
+  h1.value = article.titre || '';
+  slug.value = article.slug || ''; slug.dataset.touched = '1';
+  metaTitle.value = article.meta_titre || '';
+  metaDesc.value = article.meta_description || '';
+  metaKeywords.value = article.meta_keywords || '';
+  featuredAlt.value = article.image_une_alt || '';
+  if (article.categorie) category.value = article.categorie;
+  schemaType.value = article.schema_type || 'Article';
+  if (article.image_une_url) {
+    preview.style.backgroundImage = 'url(' + article.image_une_url + ')';
+    preview.style.backgroundSize = 'cover';
+    preview.style.backgroundPosition = 'center';
+    preview.textContent = '';
+  }
+  sectionsWrap.innerHTML = '';
+  (article.sections || []).forEach(s => addSection(s.h2, s.content));
+  if (!article.sections || !article.sections.length) addSection();
+  update();
+  document.getElementById('blog-h1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function uploadFeaturedImage() {
+  if (!featuredFile) return featuredUrl;
+  const ext = featuredFile.name.split('.').pop();
+  const path = (slug.value || 'article') + '-' + Date.now() + '.' + ext;
+  const { error } = await sb.storage.from('blog-images').upload(path, featuredFile, { upsert: true });
+  if (error) throw error;
+  const { data } = sb.storage.from('blog-images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function save(statut) {
+  if (!h1.value.trim()) { alert('Le titre est obligatoire.'); return; }
+  publishBtn.disabled = true; draftBtn.disabled = true;
+  statusMsg.textContent = 'Enregistrement...';
+  try {
+    const imageUrl = await uploadFeaturedImage();
+    const payload = {
+      titre: h1.value,
+      slug: slug.value || slugify(h1.value),
+      sections: getSectionsData(),
+      image_une_url: imageUrl,
+      image_une_alt: featuredAlt.value,
+      meta_titre: metaTitle.value,
+      meta_description: metaDesc.value,
+      meta_keywords: metaKeywords.value,
+      categorie: category.value,
+      schema_type: schemaType.value,
+      statut,
+      updated_at: new Date().toISOString(),
+      published_at: statut === 'publie' ? new Date().toISOString() : null
+    };
+    let error;
+    if (editingId) {
+      ({ error } = await sb.from('articles_blog').update(payload).eq('id', editingId));
+    } else {
+      const res = await sb.from('articles_blog').insert(payload).select('id').single();
+      error = res.error;
+      if (!error) editingId = res.data.id;
+    }
+    if (error) throw error;
+    statusMsg.textContent = statut === 'publie' ? 'Publié.' : 'Brouillon enregistré.';
+    loadArticlesList();
+  } catch (err) {
+    statusMsg.textContent = '';
+    alert('Erreur : ' + err.message);
+  } finally {
+    publishBtn.disabled = false; draftBtn.disabled = false;
+  }
+}
+publishBtn.addEventListener('click', () => save('publie'));
+draftBtn.addEventListener('click', () => save('brouillon'));
+
+async function loadArticlesList() {
+  const { data, error } = await sb.from('articles_blog').select('*').order('updated_at', { ascending: false });
+  if (error) { articlesListEl.textContent = 'Erreur de chargement.'; return; }
+  articlesListEl.innerHTML = '';
+  articlesListEl.className = data.length ? '' : 'empty-state';
+  if (!data.length) { articlesListEl.textContent = "Aucun article pour l'instant."; return; }
+  data.forEach(a => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #EDE5D6;font-size:14px;color:#2F3B27;cursor:pointer';
+    const badge = a.statut === 'publie'
+      ? '<span style="padding:4px 10px;background:#E4E7DA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#405035">Publié</span>'
+      : '<span style="padding:4px 10px;border:1px solid #DED4BF;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A6F3E">Brouillon</span>';
+    row.innerHTML = '<span>' + a.titre + '</span>' + badge;
+    row.addEventListener('click', () => loadArticleIntoForm(a));
+    articlesListEl.appendChild(row);
+  });
+}
+
+BO.initAuth(loadArticlesList);
+</script>
+<script src="assets/header-scroll.js"></script>
+</body>
+</html>

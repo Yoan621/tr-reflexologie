@@ -1,0 +1,13 @@
+{
+  "name": "TR Réflexologie",
+  "short_name": "TR Réflexologie",
+  "description": "Réflexologie plantaire, palmaire, crânienne et Dien Chan à Tavel (Gard)",
+  "icons": [
+    { "src": "/assets/favicons/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/favicons/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#405035",
+  "background_color": "#F6EEE0",
+  "display": "standalone",
+  "start_url": "/"
+}

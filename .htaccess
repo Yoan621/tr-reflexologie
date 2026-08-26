@@ -1,0 +1,13 @@
+# Protège l'espace praticienne (RDV, clients, factures) par mot de passe.
+# ⚠️ AuthUserFile pointe vers un chemin ABSOLU côté serveur, hors du dossier
+# public (web root). Sur Infomaniak, remplace le chemin ci-dessous par le
+# chemin réel affiché dans le Manager (ex: /home/clients/<id>/site-private/.htpasswd).
+# Le fichier .htpasswd correspondant se trouve dans ../site-private/.htpasswd
+# à côté de ce dossier — à uploader hors de la racine web.
+
+<FilesMatch "^(dashboard|backoffice|clients|factures|agenda|bons|blog)\.html$">
+  AuthType Basic
+  AuthName "Espace praticienne — TR Réflexologie"
+  AuthUserFile /CHEMIN/ABSOLU/SERVEUR/site-private/.htpasswd
+  Require valid-user
+</FilesMatch>

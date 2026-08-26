@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factures — Espace praticienne — TR Réflexologie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/bo-common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+</head>
+<body>
+
+<div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#405035">
+<form id="login-form" style="width:min(340px,90vw);background:#F6EEE0;border-radius:6px;padding:36px 30px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;mix-blend-mode:multiply">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Espace praticienne</span>
+<input id="login-username" type="text" required placeholder="Identifiant" autocomplete="username" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<input id="login-password" type="password" required placeholder="Mot de passe" autocomplete="current-password" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<button type="submit" id="login-btn" style="width:100%;height:46px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Se connecter</button>
+<span id="login-error" style="display:none;color:#a03a3a;font-size:12.5px"></span>
+</form>
+</div>
+
+<div id="dashboard" style="display:none;min-height:100vh;background:#F6EEE0">
+
+<aside style="flex:0 0 246px;background:#405035;color:#F6EEE0;padding:26px 20px;display:flex;flex-direction:column;gap:30px;position:sticky;top:0;height:100vh">
+<div style="display:flex;align-items:center;gap:10px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;display:block;background:#F6EEE0;border-radius:3px;padding:2px">
+<span style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Espace<br>praticienne</span>
+</div>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<a class="navbtn" data-tab="dashboard" href="dashboard.html">Dashboard</a>
+<a class="navbtn" data-tab="agenda" href="agenda.html">Agenda</a>
+<a class="navbtn" data-tab="clients" href="clients.html">Fiches clients</a>
+<a class="navbtn" data-tab="factures" href="factures.html">Factures</a>
+<a class="navbtn" data-tab="bons" href="bons.html">Bons d'achat</a>
+<a class="navbtn" data-tab="blog" href="blog.html">Blog</a>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid rgba(246,238,224,.2)">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#5B6B4C;font-size:13px">N</span>
+<span style="display:flex;flex-direction:column;line-height:1.3"><span style="font-size:13.5px">Nathalie</span><span style="font-size:11px;color:#A9B39A">Réflexologue</span></span>
+</div>
+<button type="button" id="logout-btn" style="background:none;border:none;color:#A9B39A;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Sortir</button>
+</div>
+</div>
+</aside>
+
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+<header style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px clamp(20px,3vw,38px);background:#FDFBF6;border-bottom:1px solid #E6DECE;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:5px">
+<h1 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:29px;line-height:1.1;color:#2F3B27">Factures</h1>
+<span style="font-size:12.5px;color:#8A8B78">Établies sur demande, paiement en espèces</span>
+</div>
+</header>
+
+<div style="padding:clamp(20px,3vw,34px);display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+<section style="flex:1 1 600px;min-width:500px;background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid #EDE5D6">
+<span id="factures-count" style="font-size:14.5px;color:#3E4335">0 facture</span>
+<div style="display:flex;gap:6px">
+<span style="padding:7px 14px;background:#405035;color:#F6EEE0;border-radius:3px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase">Toutes</span>
+<span style="padding:7px 14px;border:1px solid #E0D7C4;color:#6B6F5B;border-radius:3px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase">À établir</span>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:.8fr 1.2fr .9fr .7fr 1fr;padding:12px 20px;background:#F6EEE0;border-bottom:1px solid #EDE5D6;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8A8B78">
+<span>N°</span><span>Client</span><span>Séance</span><span>Montant</span><span>Statut</span>
+</div>
+<div id="factures-list" class="empty-state">Aucune facture pour l'instant.</div>
+</section>
+<aside style="flex:1 1 320px;min-width:300px;display:flex;flex-direction:column;gap:18px">
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:24px 22px;display:flex;flex-direction:column;gap:16px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Aperçu facture</span>
+<div style="padding:20px;background:#F6EEE0;border:1px solid #E6DECE;border-radius:3px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:52px;width:auto;display:block;mix-blend-mode:multiply">
+<div style="text-align:right;font-size:11.5px;line-height:1.6;color:#5A5F4C">543 chemin de Valinière<br>30126 Tavel</div>
+</div>
+<div id="facture-preview" class="empty-state" style="padding:20px 4px">Sélectionnez une facture pour l'aperçu.</div>
+<p style="margin:0;font-size:11px;line-height:1.6;color:#8A8B78">Technique de bien-être non conventionnée. Document remis à la demande du client pour transmission à sa mutuelle.</p>
+</div>
+</div>
+<div style="background:#405035;color:#F6EEE0;border-radius:4px;padding:22px 20px;display:flex;flex-direction:column;gap:12px">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Encaissements du mois</span>
+<span id="factures-total" style="font-family:'Libre Caslon Display',serif;font-size:34px;line-height:1">0 €</span>
+</div>
+</aside>
+</div>
+
+</main>
+</div>
+
+<script src="assets/bo-common.js"></script>
+<script>
+const sb = BO.sb, money = BO.money, dfmt = BO.dfmt;
+BO.initNav('factures');
+
+const listEl = document.getElementById('factures-list');
+const countEl = document.getElementById('factures-count');
+const totalEl = document.getElementById('factures-total');
+const previewEl = document.getElementById('facture-preview');
+
+async function loadFactures() {
+  const { data, error } = await sb.from('factures').select('*').order('date', { ascending: false });
+  if (error) { listEl.textContent = 'Erreur de chargement.'; return; }
+  countEl.textContent = data.length + (data.length > 1 ? ' factures' : ' facture');
+  const total = data.filter(f => f.statut === 'payee').reduce((s, f) => s + Number(f.montant), 0);
+  totalEl.textContent = money(total);
+
+  listEl.innerHTML = '';
+  listEl.className = data.length ? '' : 'empty-state';
+  if (!data.length) { listEl.textContent = "Aucune facture pour l'instant."; return; }
+  data.forEach(f => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:.8fr 1.2fr .9fr .7fr 1fr;padding:15px 20px;border-bottom:1px solid #EFE8DA;align-items:center;font-size:14px;color:#2F3B27;cursor:pointer';
+    const statusBadge = f.statut === 'payee'
+      ? '<span style="padding:4px 10px;background:#E4E7DA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#405035">Payée · ' + (f.mode_paiement || 'espèces') + '</span>'
+      : '<span style="padding:4px 10px;border:1px solid #C9C0AA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A6F3E">À établir</span>';
+    row.innerHTML =
+      '<span style="color:#5A5F4C">' + f.numero + '</span><span>' + (f.client_id || '') + '</span>' +
+      '<span style="color:#5A5F4C">' + (f.soin || '') + '</span><span style="color:#405035">' + money(f.montant) + '</span><span>' + statusBadge + '</span>';
+    row.addEventListener('click', () => showFacture(f));
+    listEl.appendChild(row);
+  });
+}
+
+function showFacture(f) {
+  previewEl.className = '';
+  previewEl.innerHTML =
+    '<div style="display:flex;justify-content:space-between;font-size:12.5px;color:#5A5F4C"><span>Facture ' + f.numero + '</span><span>' + dfmt(f.date) + '</span></div>' +
+    '<div style="padding-top:12px;border-top:1px solid #E0D7C4;display:flex;flex-direction:column;gap:8px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;color:#3E4335"><span>' + (f.soin || 'Séance') + '</span><span>' + money(f.montant) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;color:#8A8B78"><span>Réglé en ' + (f.mode_paiement || 'espèces') + '</span></div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid #E0D7C4;font-family:\'Libre Caslon Display\',serif;font-size:22px;color:#405035"><span>Total</span><span>' + money(f.montant) + '</span></div>';
+}
+
+BO.initAuth(loadFactures);
+</script>
+</body>
+</html>
