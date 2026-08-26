@@ -15,7 +15,7 @@ from pathlib import Path
 
 SUPABASE_URL = "https://dsokhfvtwidcuckqkdxb.supabase.co"
 SUPABASE_KEY = "sb_publishable_aF11Da2IvCuJHohSL4OHsg_TQYcm8Jk"
-SITE_ROOT = "https://tr-reflexologie.fr"
+SITE_ROOT = "https://tr-reflexologie.com"
 OUTPUT = Path(__file__).resolve().parent.parent / "sitemap-blog.xml"
 
 

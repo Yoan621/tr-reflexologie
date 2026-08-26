@@ -10,4 +10,4 @@ Disallow: /blog.html
 Disallow: /mentions-legales.html
 Disallow: /confidentialite.html
 
-Sitemap: https://tr-reflexologie.fr/sitemap.xml
+Sitemap: https://tr-reflexologie.com/sitemap.xml
