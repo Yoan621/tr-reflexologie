@@ -110,7 +110,7 @@
         }
       } catch (err) {
         typing.remove();
-        addBubble('Désolée, je ne suis pas disponible pour le moment. Vous pouvez appeler le cabinet au 06 29 56 35 70 ou réserver directement via le calendrier du site.', 'bot');
+        addBubble('Désolée, je ne suis pas disponible pour le moment. Vous pouvez appeler le cabinet au 06 29 56 34 70 ou réserver directement via le calendrier du site.', 'bot');
       }
     }
 
