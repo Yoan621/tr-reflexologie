@@ -192,7 +192,12 @@ document.querySelectorAll('.hoverable').forEach(el => {
   function excerpt(article) {
     if (article.meta_description) return article.meta_description;
     const first = (article.sections || [])[0];
-    if (first && first.content) return first.content.slice(0, 140) + (first.content.length > 140 ? '…' : '');
+    if (first && first.content) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = first.content;
+      const txt = (tmp.textContent || '').replace(/\s+/g, ' ').trim();
+      return txt.slice(0, 140) + (txt.length > 140 ? '…' : '');
+    }
     return '';
   }
 

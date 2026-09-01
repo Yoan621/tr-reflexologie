@@ -34,6 +34,18 @@ a:hover{color:#6E7F5E}
 .nav-soins-wrap:hover .nav-soins-menu,.nav-soins-menu.open{display:flex}
 .nav-soins-menu a{padding:9px 12px;border-radius:6px;font-size:14px;color:#3E4335;display:block}
 .nav-soins-menu a:hover{background:#F3EEDF;color:#2F3B27}
+.article-body p{margin:0 0 18px;font-size:16px;line-height:1.8;color:#3E4335}
+.article-body h2{margin:38px 0 12px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27}
+.article-body h3{margin:30px 0 10px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:22px;line-height:1.3;color:#2F3B27}
+.article-body h4{margin:24px 0 8px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:18px;line-height:1.35;color:#2F3B27}
+.article-body a{color:#405035;text-decoration:underline;text-underline-offset:2px}
+.article-body a:hover{color:#6E7F5E}
+.article-body ul,.article-body ol{margin:0 0 18px;padding-left:24px;font-size:16px;line-height:1.8;color:#3E4335}
+.article-body li{margin:0 0 6px}
+.article-body blockquote{margin:22px 0;padding:8px 0 8px 20px;border-left:3px solid #9AA688;font-style:italic;color:#5A5F4C;font-size:16px;line-height:1.75}
+.article-body figure{margin:26px 0}
+.article-body img{width:100%;height:auto;border-radius:6px;display:block}
+.article-body figcaption{margin-top:8px;font-size:13px;color:#8A8B78;text-align:center}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../assets/supabase-config.js"></script>
@@ -184,6 +196,44 @@ document.querySelectorAll('.hoverable').forEach(el => {
     return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  const RT_ALLOWED = {
+    P: [], BR: [], STRONG: [], EM: [], B: [], I: [], U: [], SPAN: [], HR: [],
+    H2: [], H3: [], H4: [], UL: [], OL: [], LI: [], BLOCKQUOTE: [],
+    A: ['href', 'target', 'rel', 'title'], IMG: ['src', 'alt', 'width', 'height'], FIGURE: [], FIGCAPTION: []
+  };
+  function sanitizeHtml(html) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = html || '';
+    (function walk(node) {
+      Array.from(node.childNodes).forEach(child => {
+        if (child.nodeType === 1) {
+          const tag = child.tagName;
+          if (!RT_ALLOWED[tag]) {
+            while (child.firstChild) node.insertBefore(child.firstChild, child);
+            node.removeChild(child);
+            return;
+          }
+          Array.from(child.attributes).forEach(attr => {
+            if (!RT_ALLOWED[tag].includes(attr.name)) { child.removeAttribute(attr.name); return; }
+            if (attr.name === 'href' && !/^(https?:|mailto:|tel:|\/|#|\.\.?\/)/i.test(attr.value.trim())) child.removeAttribute('href');
+            if (attr.name === 'src' && !/^(https?:|\/|data:image\/)/i.test(attr.value.trim())) child.removeAttribute('src');
+          });
+          if (tag === 'A' && /^https?:/i.test(child.getAttribute('href') || '')) {
+            child.setAttribute('target', '_blank'); child.setAttribute('rel', 'noopener noreferrer');
+          }
+          walk(child);
+        } else if (child.nodeType === 8) {
+          node.removeChild(child);
+        }
+      });
+    })(tpl.content);
+    return tpl.innerHTML;
+  }
+  function renderContent(content) {
+    if (/<(p|h2|h3|h4|ul|ol|li|a|img|figure|strong|em|b|i|blockquote|br)\b/i.test(content || '')) return sanitizeHtml(content);
+    return '<p style="white-space:pre-line">' + escapeHtml(content) + '</p>';
+  }
+
   if (!slug) {
     wrap.innerHTML = '<div class="empty-state">Article introuvable.<br><a href="index.html">← Retour au blog</a></div>';
   } else {
@@ -228,8 +278,8 @@ document.querySelectorAll('.hoverable').forEach(el => {
         document.getElementById('ld-json').textContent = JSON.stringify(schema, null, 2);
 
         const sectionsHtml = (a.sections || []).map(s =>
-          '<h2 style="margin:36px 0 12px;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27">' + escapeHtml(s.h2) + '</h2>' +
-          '<p style="margin:0;font-size:16px;line-height:1.8;color:#3E4335;white-space:pre-line">' + escapeHtml(s.content) + '</p>'
+          (s.h2 ? '<h2 style="margin:36px 0 12px;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27">' + escapeHtml(s.h2) + '</h2>' : '') +
+          renderContent(s.content)
         ).join('');
 
         wrap.innerHTML =
@@ -240,7 +290,7 @@ document.querySelectorAll('.hoverable').forEach(el => {
             '<span style="font-size:13px;color:#8A8B78">Par Nathalie Roudil' + (a.published_at ? ' · ' + dfmt(a.published_at) : '') + '</span>' +
           '</div>' +
           (a.image_une_url ? '<img src="' + a.image_une_url + '" alt="' + escapeHtml(a.image_une_alt || a.titre) + '" style="width:100%;border-radius:6px;margin-top:28px;display:block">' : '') +
-          '<div style="margin-top:8px">' + sectionsHtml + '</div>' +
+          '<div class="article-body" style="margin-top:8px">' + sectionsHtml + '</div>' +
           '<div style="margin-top:48px;padding-top:28px;border-top:1px solid #E0D7C4;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">' +
             '<span style="font-size:14px;color:#5A5F4C">Envie d\'en discuter ?</span>' +
             '<a href="../index.html#reserver" class="hoverable" data-hover="background:#2F3B27" style="display:inline-flex;align-items:center;gap:9px;padding:13px 24px;background:#405035;color:#F6EEE0;border-radius:999px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase">Prendre rendez-vous</a>' +

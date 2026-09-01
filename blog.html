@@ -8,7 +8,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/bo-common.css">
+<style>
+.tox-tinymce{border-radius:3px!important;border-color:#D8CEB9!important}
+#blog-corps-fallback{width:100%;min-height:320px;border:1px solid #D8CEB9;background:#F6EEE0;border-radius:2px;padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.6;color:#23281E;resize:vertical}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js" referrerpolicy="origin"></script>
 <script src="assets/supabase-config.js"></script>
 </head>
 <body>
@@ -77,9 +82,11 @@
 </label>
 </div>
 
-<div id="blog-sections" style="display:flex;flex-direction:column;gap:14px"></div>
-
-<button type="button" id="blog-add-section" style="align-self:flex-start;height:44px;padding:0 20px;border:1px dashed #9AA688;background:transparent;color:#405035;border-radius:3px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">+ Ajouter une section (H2)</button>
+<div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:22px 24px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8B78">Contenu de l'article</span>
+<span style="font-size:12px;color:#8A8B78;line-height:1.5">Rédigez comme dans Word. « Titre 2 / Titre 3 » pour les sous-titres · <b>🔗</b> pour un lien · <b>🖼</b> pour insérer une photo (glissez-déposez aussi possible).</span>
+<textarea id="blog-corps"></textarea>
+</div>
 
 <div style="display:flex;gap:10px;padding-top:8px;align-items:center">
 <button type="button" id="blog-publish-btn" style="height:46px;padding:0 26px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Publier l'article</button>
@@ -169,8 +176,6 @@
 const sb = BO.sb;
 BO.initNav('blog');
 
-const sectionsWrap = document.getElementById('blog-sections');
-const addSectionBtn = document.getElementById('blog-add-section');
 const newBtn = document.getElementById('blog-new-btn');
 const publishBtn = document.getElementById('blog-publish-btn');
 const draftBtn = document.getElementById('blog-draft-btn');
@@ -181,26 +186,136 @@ let editingId = null;
 let featuredFile = null;
 let featuredUrl = null;
 
-function addSection(h2 = '', content = '') {
-  const block = document.createElement('div');
-  block.className = 'h2block';
-  block.innerHTML =
-    '<div style="display:flex;justify-content:space-between;align-items:center">' +
-      '<span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8B78">Section (H2)</span>' +
-      '<button type="button" class="blog-remove-section" style="border:none;background:none;color:#8A8B78;cursor:pointer;font-size:12px">Supprimer</button>' +
-    '</div>' +
-    '<input type="text" class="blog-h2-input" placeholder="Sous-titre H2" value="' + h2.replace(/"/g, '&quot;') + '" style="border:1px solid #D8CEB9;background:#F6EEE0;border-radius:2px;padding:11px 12px;font-family:\'Libre Caslon Display\',serif;font-size:19px;color:#2F3B27">' +
-    '<textarea rows="5" class="blog-content-input" placeholder="Contenu de la section…" style="border:1px solid #D8CEB9;background:#F6EEE0;border-radius:2px;padding:11px 12px;font-size:14px;line-height:1.6;color:#23281E;resize:vertical">' + content + '</textarea>';
-  block.querySelector('.blog-remove-section').addEventListener('click', () => block.remove());
-  sectionsWrap.appendChild(block);
+// ---- Sanitizer : allowlist de balises/attributs autorisés dans le contenu ----
+const RT_ALLOWED = {
+  P: [], BR: [], STRONG: [], EM: [], B: [], I: [], U: [], SPAN: [],
+  H2: [], H3: [], H4: [], UL: [], OL: [], LI: [], BLOCKQUOTE: [], HR: [],
+  A: ['href', 'title'], IMG: ['src', 'alt', 'width', 'height'], FIGURE: [], FIGCAPTION: []
+};
+function sanitizeHtml(html) {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html || '';
+  (function walk(node) {
+    Array.from(node.childNodes).forEach(child => {
+      if (child.nodeType === 1) {
+        const tag = child.tagName;
+        if (!RT_ALLOWED[tag]) {
+          // balise interdite : on remonte ses enfants puis on la retire
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+          return;
+        }
+        Array.from(child.attributes).forEach(attr => {
+          if (!RT_ALLOWED[tag].includes(attr.name)) { child.removeAttribute(attr.name); return; }
+          if (attr.name === 'href') {
+            const v = attr.value.trim();
+            if (!/^(https?:|mailto:|tel:|\/|#|\.\.?\/)/i.test(v)) { child.removeAttribute('href'); return; }
+            if (/^https?:/i.test(v)) { child.setAttribute('target', '_blank'); child.setAttribute('rel', 'noopener noreferrer'); }
+          }
+          if (attr.name === 'src' && !/^(https?:|\/|data:image\/)/i.test(attr.value.trim())) child.removeAttribute('src');
+        });
+        walk(child);
+      } else if (child.nodeType === 8) {
+        node.removeChild(child);
+      }
+    });
+  })(tpl.content);
+  return tpl.innerHTML.trim();
 }
-addSectionBtn.addEventListener('click', () => addSection());
 
-function getSectionsData() {
-  return Array.from(sectionsWrap.querySelectorAll('.h2block')).map(b => ({
-    h2: b.querySelector('.blog-h2-input').value,
-    content: b.querySelector('.blog-content-input').value
-  }));
+function textToHtml(txt) {
+  return (txt || '').split(/\n{2,}/).map(p =>
+    '<p>' + p.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '</p>'
+  ).join('');
+}
+
+// ---- Éditeur riche TinyMCE (style WordPress) ----
+const corpsFallback = document.getElementById('blog-corps');
+let editorReady = false;
+
+function inlineImageUpload(blobInfo) {
+  return new Promise((resolve, reject) => {
+    const file = blobInfo.blob();
+    const ext = ((blobInfo.filename && blobInfo.filename()) || 'image.jpg').split('.').pop().toLowerCase() || 'jpg';
+    const path = 'inline/' + (slug.value || 'article') + '-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
+    sb.storage.from('blog-images').upload(path, file, { upsert: true, contentType: file.type })
+      .then(({ error }) => {
+        if (error) { reject('Upload échoué : ' + error.message); return; }
+        resolve(sb.storage.from('blog-images').getPublicUrl(path).data.publicUrl);
+      })
+      .catch(err => reject(String(err && err.message || err)));
+  });
+}
+
+let editorInited = false;
+function initEditor() {
+  if (editorInited) return;
+  editorInited = true;
+  if (window.tinymce) {
+  tinymce.init({
+    selector: '#blog-corps',
+    license_key: 'gpl',
+    height: 560,
+    menubar: false,
+    branding: false,
+    language: 'fr_FR',
+    language_url: 'https://cdn.jsdelivr.net/npm/tinymce-i18n@latest/langs7/fr_FR.js',
+    plugins: 'lists link image autolink autoresize wordcount code searchreplace visualblocks',
+    toolbar: 'undo redo | blocks | bold italic | bullist numlist blockquote | link image | removeformat | code',
+    block_formats: 'Paragraphe=p; Titre 2=h2; Titre 3=h3; Titre 4=h4',
+    toolbar_mode: 'wrap',
+    autoresize_bottom_margin: 20,
+    min_height: 360,
+    content_style:
+      "body{font-family:'Work Sans',system-ui,sans-serif;font-size:15px;line-height:1.75;color:#23281E;margin:14px 18px}" +
+      "h2,h3,h4{font-family:'Libre Caslon Display',serif;font-weight:400;color:#2F3B27;line-height:1.3}" +
+      "h2{font-size:24px;margin:26px 0 10px}h3{font-size:20px;margin:22px 0 8px}h4{font-size:17px}" +
+      "a{color:#405035}img{max-width:100%;height:auto;border-radius:6px}" +
+      "blockquote{margin:18px 0;padding:6px 0 6px 16px;border-left:3px solid #9AA688;color:#5A5F4C;font-style:italic}",
+    paste_as_text: false,
+    paste_webkit_styles: 'none',
+    paste_remove_styles_if_webkit: true,
+    paste_merge_formats: true,
+    automatic_uploads: true,
+    images_upload_handler: inlineImageUpload,
+    image_dimensions: false,
+    image_description: true,
+    file_picker_types: 'image',
+    convert_urls: false,
+    setup(ed) { ed.on('init', () => { editorReady = true; }); }
+  });
+  } else {
+    // Repli : TinyMCE non chargé → textarea HTML brut
+    corpsFallback.id = 'blog-corps-fallback';
+    corpsFallback.placeholder = 'Contenu HTML de l\'article (TinyMCE indisponible)';
+  }
+}
+
+function tinyEd() {
+  return (window.tinymce && tinymce.get('blog-corps')) || null;
+}
+function fallbackEl() {
+  return document.getElementById('blog-corps-fallback') || document.getElementById('blog-corps');
+}
+function getBodyHtml() {
+  const raw = tinyEd() ? tinyEd().getContent() : (fallbackEl().value || '');
+  return sanitizeHtml(raw);
+}
+function setBodyHtml(html) {
+  const clean = html || '';
+  if (tinyEd()) { tinyEd().setContent(clean); }
+  else if (window.tinymce && !editorReady) { setTimeout(() => setBodyHtml(html), 200); }
+  else { fallbackEl().value = clean; }
+}
+
+// Fusionne l'ancien format multi-sections en un seul bloc HTML
+function sectionsToHtml(sections) {
+  return (sections || []).map(s => {
+    const c = s.content || '';
+    const looksHtml = /<(p|h2|h3|ul|ol|li|a|img|figure|strong|em|b|i|blockquote|br)\b/i.test(c);
+    const body = looksHtml ? c : textToHtml(c);
+    return (s.h2 ? '<h2>' + s.h2.replace(/</g, '&lt;') + '</h2>' : '') + body;
+  }).join('\n');
 }
 
 const preview = document.getElementById('blog-featured-preview');
@@ -273,8 +388,7 @@ function resetForm() {
   category.selectedIndex = 0; schemaType.value = 'Article';
   preview.style.backgroundImage = '';
   preview.textContent = 'Cliquer pour choisir une image\n1200 × 675 px recommandé';
-  sectionsWrap.innerHTML = '';
-  addSection();
+  setBodyHtml('');
   statusMsg.textContent = '';
   update();
 }
@@ -298,9 +412,7 @@ async function loadArticleIntoForm(article) {
     preview.style.backgroundPosition = 'center';
     preview.textContent = '';
   }
-  sectionsWrap.innerHTML = '';
-  (article.sections || []).forEach(s => addSection(s.h2, s.content));
-  if (!article.sections || !article.sections.length) addSection();
+  setBodyHtml(sectionsToHtml(article.sections));
   update();
   document.getElementById('blog-h1').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -324,7 +436,7 @@ async function save(statut) {
     const payload = {
       titre: h1.value,
       slug: slug.value || slugify(h1.value),
-      sections: getSectionsData(),
+      sections: [{ h2: '', content: getBodyHtml() }],
       image_une_url: imageUrl,
       image_une_alt: featuredAlt.value,
       meta_titre: metaTitle.value,
@@ -375,7 +487,7 @@ async function loadArticlesList() {
   });
 }
 
-BO.initAuth(loadArticlesList);
+BO.initAuth(() => { initEditor(); loadArticlesList(); });
 </script>
 <script src="assets/header-scroll.js"></script>
 </body>
