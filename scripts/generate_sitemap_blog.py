@@ -44,7 +44,7 @@ def build_xml(articles):
             continue
         lastmod = (a.get("updated_at") or a.get("published_at") or "")[:10]
         lines.append("<url>")
-        lines.append(f"<loc>{SITE_ROOT}/blog/article.html?slug={slug}</loc>")
+        lines.append(f"<loc>{SITE_ROOT}/blog/{slug}</loc>")
         if lastmod:
             lines.append(f"<lastmod>{lastmod}</lastmod>")
         lines.append("<changefreq>monthly</changefreq>")

@@ -101,7 +101,13 @@ a:hover{color:#6E7F5E}
 </nav>
 <div id="mobile-nav-overlay" style="display:none;position:fixed;inset:0;background:rgba(29,34,24,.4);z-index:25"></div>
 
-<section style="padding:clamp(48px,7vw,88px) clamp(20px,4vw,64px) clamp(28px,4vw,44px);display:flex;flex-direction:column;gap:14px;max-width:1100px;margin:0 auto;text-align:center;align-items:center">
+<nav aria-label="Fil d'Ariane" style="max-width:1100px;margin:0 auto;padding:16px clamp(20px,4vw,64px) 0;font-size:13px;color:#8A8B78;display:flex;flex-wrap:wrap;gap:7px;align-items:center">
+<a href="../index.html" style="color:#8A8B78">Accueil</a><span aria-hidden="true">&rsaquo;</span>
+<span style="color:#5A5F4C">Blog</span>
+</nav>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://tr-reflexologie.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://tr-reflexologie.com/blog/"}]}</script>
+
+<section style="padding:clamp(28px,5vw,56px) clamp(20px,4vw,64px) clamp(28px,4vw,44px);display:flex;flex-direction:column;gap:14px;max-width:1100px;margin:0 auto;text-align:center;align-items:center">
 <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A8B78">Le blog</span>
 <h1 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(32px,4.4vw,52px);line-height:1.08;color:#2F3B27">Conseils et actualités<br>autour de la réflexologie</h1>
 <p style="margin:0;max-width:52ch;font-size:15px;line-height:1.7;color:#5A5F4C">Sommeil, mutuelles, Dien Chan, pratique au quotidien : les articles de Nathalie sur la réflexologie plantaire, palmaire et crânienne.</p>
@@ -211,7 +217,7 @@ document.querySelectorAll('.hoverable').forEach(el => {
       grid.innerHTML = '';
       data.forEach(a => {
         const card = document.createElement('a');
-        card.href = 'article.html?slug=' + encodeURIComponent(a.slug);
+        card.href = '/blog/' + encodeURIComponent(a.slug);
         card.style.cssText = 'display:flex;flex-direction:column;gap:14px;color:inherit';
         card.innerHTML =
           '<div class="card-cover">' + (a.image_une_url
