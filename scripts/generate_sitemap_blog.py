@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Regenerates sitemap-blog.xml from the published articles in Supabase.
+DEPRECATED — sitemap-blog.xml is now served live by api/sitemap-blog.js
+(Vercel function, rewrite in vercel.json), reading Supabase on every
+request. No manual regeneration needed anymore; new articles appear
+in the sitemap as soon as they're published.
 
-Run this after publishing, editing, or unpublishing a blog article:
+Kept only as an offline/debug tool to preview the XML a given moment
+would produce:
     python3 scripts/generate_sitemap_blog.py
-
-The static pages (home, à propos, bons cadeaux, blog listing) live in
-sitemap-pages.xml and are NOT touched by this script — only individual
-blog article URLs are dynamic and need regenerating here.
+(writes to sitemap-blog.xml locally — do NOT commit that file, it is
+no longer served statically and Vercel would shadow the live route)
 """
 import json
 import urllib.request
