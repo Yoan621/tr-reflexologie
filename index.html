@@ -683,16 +683,41 @@ Laisser un avis sur Google
   let selectedSlot = '';
   let selectedCare = '';
 
-  function renderSlots(date) {
+  function dateKey(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  async function blockedSlots(date) {
+    try {
+      const sb = window.getSupabase();
+      const { data, error } = await sb.from('disponibilite_bloquee').select('heure').eq('date', dateKey(date));
+      if (error) throw error;
+      const set = new Set();
+      let fullDay = false;
+      (data || []).forEach(r => { if (r.heure == null) fullDay = true; else set.add(r.heure); });
+      return { set, fullDay };
+    } catch (_) {
+      return { set: new Set(), fullDay: false };
+    }
+  }
+
+  async function renderSlots(date) {
     const dow = date.getDay();
-    const slots = slotsForDay(dow);
     const dateLabel = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
     slotsLabel.textContent = 'Créneaux du ' + dateLabel;
-    slotsWrap.innerHTML = '';
+    slotsWrap.innerHTML = '<span style="font-size:13px;color:#8A8B78">Chargement…</span>';
     careType.style.display = 'none';
     durationType.style.display = 'none';
     form.style.display = 'none';
     confirmed.style.display = 'none';
+
+    const { set: blocked, fullDay } = await blockedSlots(date);
+    const slots = fullDay ? [] : slotsForDay(dow).filter(s => !blocked.has(s));
+    slotsWrap.innerHTML = '';
+    if (!slots.length) {
+      slotsWrap.innerHTML = '<span style="font-size:13px;color:#8A8B78">Aucun créneau disponible ce jour. Choisissez une autre date.</span>';
+      return;
+    }
 
     slots.forEach(slot => {
       const btn = document.createElement('button');
