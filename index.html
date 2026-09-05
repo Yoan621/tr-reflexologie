@@ -698,9 +698,11 @@ Laisser un avis sur Google
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = slot;
-      btn.className = 'hoverable';
-      btn.setAttribute('data-hover', 'background:#405035;color:#F6EEE0');
-      btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;text-align:center';
+      btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:background .15s ease,color .15s ease';
+      // Survol : vert sapin plein pour reperer le creneau vise (btn cree dynamiquement,
+      // le handler global .hoverable ne l'attrape pas).
+      btn.addEventListener('mouseenter', () => { btn.style.background = '#405035'; btn.style.color = '#F6EEE0'; });
+      btn.addEventListener('mouseleave', () => { btn.style.background = '#FDFBF6'; btn.style.color = '#405035'; });
       btn.addEventListener('click', () => {
         selectedDateLabel = dateLabel;
         selectedSlot = slot;
