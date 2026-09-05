@@ -171,7 +171,7 @@
       soin: selectedCare,
       duree: selectedDuration,
       prix,
-      date: selectedDate.toISOString().slice(0, 10),
+      date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
       heure: selectedSlot,
       statut: 'en_attente',
       source: 'site'
