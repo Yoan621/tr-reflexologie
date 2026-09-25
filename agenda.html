@@ -20,12 +20,41 @@
   .dispo-list-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #EDE5D6;font-size:13px}
   .dispo-list-item .x{cursor:pointer;color:#A8542F;font-size:15px;flex-shrink:0}
 
+  .cal-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid #EDE5D6;flex-wrap:wrap}
+  .cal-nav{width:38px;height:38px;border:1px solid #E0D7C4;background:#F6EEE0;border-radius:6px;color:#405035;font-size:18px;cursor:pointer;flex-shrink:0}
+  .cal-label{font-size:14.5px;color:#3E4335;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-today{padding:8px 12px;border:1px solid #E0D7C4;background:#FDFBF6;color:#405035;border-radius:6px;font-family:'Work Sans',sans-serif;font-size:12.5px;cursor:pointer}
+  .cal-view{padding:8px 14px;border:1px solid #E0D7C4;background:transparent;color:#6B6F5B;border-radius:6px;font-family:'Work Sans',sans-serif;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+  .cal-view.on{background:#405035;border-color:#405035;color:#F6EEE0}
+  .cal-head,.cal-body{display:grid;grid-template-columns:52px repeat(var(--cols),1fr)}
+  .cal-head{border-bottom:1px solid #EDE5D6;background:#F6EEE0}
+  .cal-dh{padding:9px 4px;text-align:center;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#6B6F5B;cursor:pointer;border:none;background:none;font-family:'Work Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .cal-dh b{font-family:'Libre Caslon Display',serif;font-weight:400;font-size:19px;letter-spacing:0;color:#2F3B27;text-transform:none}
+  .cal-dh.today b{background:#405035;color:#F6EEE0;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+  .cal-hours{position:relative}
+  .cal-hours span{position:absolute;right:8px;font-size:11px;color:#A8A995;transform:translateY(-50%)}
+  .cal-col{position:relative;border-left:1px solid #EFE8DA;background-image:repeating-linear-gradient(#FDFBF6 0,#FDFBF6 calc(var(--h) - 1px),#EFE8DA calc(var(--h) - 1px),#EFE8DA var(--h))}
+  .cal-col.closed{background-color:#F3EEE3;background-image:repeating-linear-gradient(#F3EEE3 0,#F3EEE3 calc(var(--h) - 1px),#EAE3D4 calc(var(--h) - 1px),#EAE3D4 var(--h))}
+  .cal-ev{position:absolute;left:3px;right:3px;border-radius:6px;padding:4px 7px;font-size:12px;line-height:1.25;overflow:hidden;cursor:pointer;text-align:left;border:none;font-family:'Work Sans',sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .cal-ev.conf{background:#405035;color:#F6EEE0}
+  .cal-ev.pend{background:#F3E3C7;color:#5E4A22;border:1px dashed #C9A15A}
+  .cal-ev b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-ev small{display:block;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-blk{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,#E6DFD0 0,#E6DFD0 4px,#F1ECE1 4px,#F1ECE1 8px);pointer-events:none}
+  .cal-now{position:absolute;left:0;right:0;height:2px;background:#C2502E;z-index:2}
+  .cal-now::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:#C2502E}
+  .cal-legend{display:flex;gap:16px;padding:10px 18px;font-size:12px;color:#6B6F5B;border-top:1px solid #EDE5D6;flex-wrap:wrap}
+  .cal-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .cal-legend i.hatch{background:repeating-linear-gradient(45deg,#D9D1BF 0,#D9D1BF 2px,#F1ECE1 2px,#F1ECE1 4px)}
+
   @media (max-width: 860px){
     #agenda-content{padding:14px !important;gap:16px !important}
     #agenda-week{flex:1 1 100% !important;min-width:0 !important}
     #agenda-side{flex:1 1 100% !important;min-width:0 !important}
     #agenda-weekgrid-wrap{overflow-x:auto !important}
-    #agenda-weekgrid,#agenda-weekhead{min-width:560px}
+    #cal-inner.is-week{min-width:540px}
+    .cal-bar{padding:12px}
+    .cal-today{padding:8px 10px}
     #site-header{padding:14px !important}
     #site-header .search-box{display:none !important}
   }
@@ -94,43 +123,25 @@
 
 <div id="agenda-content" style="padding:clamp(20px,3vw,34px);display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
 <section id="agenda-week" style="flex:1 1 620px;min-width:520px;background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;overflow:hidden">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid #EDE5D6">
-<div style="display:flex;align-items:center;gap:10px">
-<button type="button" style="width:34px;height:34px;border:1px solid #E0D7C4;background:#F6EEE0;border-radius:3px;color:#405035;font-size:14px;cursor:pointer">‹</button>
-<span style="font-size:14.5px;color:#3E4335">Semaine en cours</span>
-<button type="button" style="width:34px;height:34px;border:1px solid #E0D7C4;background:#F6EEE0;border-radius:3px;color:#405035;font-size:14px;cursor:pointer">›</button>
+<div class="cal-bar">
+<div style="display:flex;align-items:center;gap:8px;min-width:0">
+<button type="button" class="cal-nav" id="cal-prev" aria-label="Précédent">‹</button>
+<button type="button" class="cal-nav" id="cal-next" aria-label="Suivant">›</button>
+<span id="cal-label" class="cal-label">Semaine en cours</span>
 </div>
-<div style="display:flex;gap:6px">
-<span style="padding:7px 14px;background:#405035;color:#F6EEE0;border-radius:3px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase">Semaine</span>
-<span style="padding:7px 14px;border:1px solid #E0D7C4;color:#6B6F5B;border-radius:3px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase">Jour</span>
+<div style="display:flex;gap:6px;align-items:center">
+<button type="button" class="cal-today" id="cal-today">Aujourd'hui</button>
+<button type="button" class="cal-view" data-view="week">Semaine</button>
+<button type="button" class="cal-view" data-view="day">Jour</button>
 </div>
 </div>
 <div id="agenda-weekgrid-wrap">
-<div id="agenda-weekhead" style="display:grid;grid-template-columns:62px repeat(5,1fr);border-bottom:1px solid #EDE5D6;background:#F6EEE0">
-<span></span>
-<span style="padding:11px 8px;text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6B6F5B">Mar</span>
-<span style="padding:11px 8px;text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6B6F5B">Mer</span>
-<span style="padding:11px 8px;text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6B6F5B">Jeu</span>
-<span style="padding:11px 8px;text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6B6F5B">Ven</span>
-<span style="padding:11px 8px;text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#405035">Sam · matin</span>
-</div>
-<div id="agenda-weekgrid" style="display:grid;grid-template-columns:62px repeat(5,1fr);grid-auto-rows:56px;position:relative">
-<span style="grid-column:1;grid-row:1;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">9 h</span>
-<span style="grid-column:1;grid-row:2;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">10 h</span>
-<span style="grid-column:1;grid-row:3;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">11 h</span>
-<span style="grid-column:1;grid-row:4;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">14 h</span>
-<span style="grid-column:1;grid-row:5;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">16 h</span>
-<span style="grid-column:1;grid-row:6;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">18 h</span>
-<span style="grid-column:1;grid-row:7;padding:6px 10px;font-size:11.5px;color:#A8A995;text-align:right">19 h</span>
-<span style="grid-column:2 / 7;grid-row:1;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:2;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:3;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:4;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:5;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:6;border-top:1px solid #EFE8DA"></span>
-<span style="grid-column:2 / 7;grid-row:7;border-top:1px solid #EFE8DA;border-bottom:1px solid #EFE8DA"></span>
+<div id="cal-inner">
+<div id="agenda-weekhead" class="cal-head"></div>
+<div id="agenda-weekgrid" class="cal-body"></div>
 </div>
 </div>
+<div class="cal-legend"><span><i style="background:#405035"></i>Confirmé</span><span><i style="background:#E9C98E"></i>À confirmer</span><span><i class="hatch"></i>Bloqué</span></div>
 <div id="agenda-list" class="empty-state" style="border-top:1px solid #EDE5D6">Aucun rendez-vous pour l'instant.<br>Les réservations reçues depuis le site apparaîtront ici.</div>
 </section>
 <aside id="agenda-side" style="flex:1 1 300px;min-width:280px;display:flex;flex-direction:column;gap:18px">
@@ -207,8 +218,8 @@ function rdvRow(rdv, actions) {
   el.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #EDE5D6;flex-wrap:wrap';
   el.innerHTML =
     '<div style="display:flex;flex-direction:column;gap:2px">' +
-      '<span style="font-size:14px;color:#2F3B27">' + rdv.nom_client + '</span>' +
-      '<span style="font-size:12px;color:#8A8B78">' + dfmt(rdv.date) + ' · ' + rdv.heure + ' · ' + rdv.soin + ' (' + rdv.duree + ')</span>' +
+      '<span style="font-size:14px;color:#2F3B27">' + esc(rdv.nom_client) + '</span>' +
+      '<span style="font-size:12px;color:#8A8B78">' + dfmt(rdv.date) + ' · ' + esc(rdv.heure) + ' · ' + esc(rdv.soin) + ' (' + esc(rdv.duree) + ')</span>' +
     '</div>';
   const actionsWrap = document.createElement('div');
   actionsWrap.style.cssText = 'display:flex;gap:10px;flex-shrink:0';
@@ -224,8 +235,13 @@ function rdvRow(rdv, actions) {
 }
 
 async function loadAgenda() {
-  const { data, error } = await sb.from('rendez_vous').select('*').order('date', { ascending: true }).order('heure', { ascending: true });
+  const [{ data, error }, { data: blocks }] = await Promise.all([
+    sb.from('rendez_vous').select('*').order('date', { ascending: true }).order('heure', { ascending: true }),
+    sb.from('indisponibilites').select('date,heure')
+  ]);
   if (error) { agendaList.textContent = 'Erreur de chargement.'; return; }
+  allRdv = data || []; calBlocks = blocks || [];
+  renderCal();
   const pending = (data || []).filter(r => r.statut === 'en_attente');
   const confirmed = (data || []).filter(r => r.statut === 'confirme');
 
@@ -248,12 +264,141 @@ function showSelected(rdv) {
   agendaSelected.className = '';
   agendaSelected.innerHTML =
     '<div style="display:flex;flex-direction:column;gap:8px;text-align:left">' +
-      '<span style="font-size:16px;color:#2F3B27">' + rdv.nom_client + '</span>' +
-      '<span style="font-size:12.5px;color:#8A8B78">' + dfmt(rdv.date) + ' · ' + rdv.heure + '</span>' +
-      '<span style="font-size:13.5px;color:#3E4335">' + rdv.soin + ' · ' + rdv.duree + '</span>' +
-      '<span style="font-size:13.5px;color:#3E4335">' + rdv.telephone + ' · ' + rdv.email + '</span>' +
+      '<span style="font-size:16px;color:#2F3B27">' + esc(rdv.nom_client) + '</span>' +
+      '<span style="font-size:12.5px;color:#8A8B78">' + dfmt(rdv.date) + ' · ' + esc(rdv.heure) + ' · ' + (rdv.statut === 'confirme' ? 'confirmé' : rdv.statut === 'en_attente' ? 'à confirmer' : 'annulé') + '</span>' +
+      '<span style="font-size:13.5px;color:#3E4335">' + esc(rdv.soin) + ' · ' + esc(rdv.duree) + '</span>' +
+      '<span style="font-size:13.5px;color:#3E4335"><a href="tel:' + esc(String(rdv.telephone || '').replace(/[^\d+]/g, '')) + '">' + esc(rdv.telephone) + '</a> · ' + esc(rdv.email) + '</span>' +
     '</div>';
+  const acts = rdv.statut === 'en_attente' ? [['Confirmer', confirmRdv], ['Refuser', cancelRdv]]
+    : rdv.statut === 'confirme' ? [['Annuler le RDV', cancelRdv]] : [];
+  if (acts.length) {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'display:flex;gap:8px;margin-top:12px;flex-wrap:wrap';
+    acts.forEach(([label, fn], i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.style.cssText = 'padding:10px 16px;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;' +
+        (i === 0 && rdv.statut === 'en_attente' ? 'background:#405035;color:#F6EEE0;border:1px solid #405035' : 'background:#FDFBF6;color:#A8542F;border:1px solid #A8542F');
+      b.addEventListener('click', async () => { await fn(rdv); agendaSelected.className = 'empty-state'; agendaSelected.textContent = 'Sélectionnez un rendez-vous dans l\'agenda pour voir le détail ici.'; });
+      bar.appendChild(b);
+    });
+    agendaSelected.firstElementChild.appendChild(bar);
+  }
 }
+
+/* ------- Calendrier semaine / jour ------- */
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const CAL_START = 9 * 60, CAL_END = 20 * 60, HOUR_PX = 60;
+const PX = HOUR_PX / 60;
+const calState = { view: matchMedia('(max-width: 860px)').matches ? 'day' : 'week', date: new Date() };
+let allRdv = [], calBlocks = [];
+
+const toMin = h => { const m = /(\d{1,2})\s*[h:]\s*(\d{0,2})/.exec(h || ''); return m ? +m[1] * 60 + +(m[2] || 0) : null; };
+const durMin = d => { const a = /(\d+)\s*min/.exec(d || ''); if (a) return +a[1]; const b = /(\d+)\s*heure/.exec(d || ''); return b ? +b[1] * 60 : 60; };
+const keyOf = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const isOpen = d => d.getDay() >= 2 && d.getDay() <= 6;
+function weekDays(d) { // mardi -> samedi de la semaine de d
+  const x = new Date(d); x.setHours(12, 0, 0, 0);
+  const dow = x.getDay(); const monday = addDays(x, dow === 0 ? -6 : 1 - dow);
+  return [1, 2, 3, 4, 5].map(i => addDays(monday, i));
+}
+function closeHour(d) { return d.getDay() === 6 ? 12 * 60 : CAL_END; }
+function openHour(d) { return d.getDay() === 6 ? 9 * 60 : 10 * 60; }
+
+function renderCal() {
+  const days = calState.view === 'week' ? weekDays(calState.date) : [calState.date];
+  const head = document.getElementById('agenda-weekhead');
+  const body = document.getElementById('agenda-weekgrid');
+  const inner = document.getElementById('cal-inner');
+  inner.classList.toggle('is-week', calState.view === 'week');
+  inner.style.setProperty('--cols', days.length);
+  inner.style.setProperty('--h', (HOUR_PX / 2) + 'px');
+  document.querySelectorAll('.cal-view').forEach(b => b.classList.toggle('on', b.dataset.view === calState.view));
+
+  const todayK = keyOf(new Date());
+  const lbl = document.getElementById('cal-label');
+  if (calState.view === 'week') {
+    const a = days[0], b = days[days.length - 1];
+    const same = a.getMonth() === b.getMonth();
+    lbl.textContent = (days.some(d => keyOf(d) === todayK) ? 'Cette semaine · ' : '') +
+      a.getDate() + (same ? '' : ' ' + a.toLocaleDateString('fr-FR', { month: 'short' })) + ' – ' + b.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  } else {
+    const d = days[0];
+    lbl.textContent = (keyOf(d) === todayK ? "Aujourd'hui · " : '') + d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  head.innerHTML = '<span></span>' + days.map(d =>
+    '<button type="button" class="cal-dh' + (keyOf(d) === todayK ? ' today' : '') + '" data-k="' + keyOf(d) + '">' +
+    d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '') + '<b>' + d.getDate() + '</b></button>').join('');
+  head.querySelectorAll('.cal-dh').forEach(b => b.addEventListener('click', () => {
+    calState.view = 'day'; calState.date = new Date(b.dataset.k + 'T12:00:00'); renderCal();
+  }));
+
+  const height = (CAL_END - CAL_START) * PX;
+  let hours = '<div class="cal-hours" style="height:' + height + 'px">';
+  for (let m = CAL_START + 60; m < CAL_END; m += 60) hours += '<span style="top:' + (m - CAL_START) * PX + 'px">' + (m / 60) + ' h</span>';
+  body.innerHTML = hours + '</div>';
+
+  days.forEach(d => {
+    const k = keyOf(d);
+    const col = document.createElement('div');
+    col.className = 'cal-col' + (isOpen(d) ? '' : ' closed');
+    col.style.height = height + 'px';
+    // heures fermees du jour (avant ouverture / apres fermeture)
+    if (isOpen(d)) {
+      [[CAL_START, openHour(d)], [closeHour(d), CAL_END]].forEach(([a, b]) => {
+        if (b > a) col.insertAdjacentHTML('beforeend', '<div class="cal-blk" style="top:' + (a - CAL_START) * PX + 'px;height:' + (b - a) * PX + 'px;opacity:.45"></div>');
+      });
+    }
+    calBlocks.filter(x => x.date === k).forEach(x => {
+      const a = x.heure == null ? openHour(d) : toMin(x.heure);
+      const b = x.heure == null ? closeHour(d) : a + 30;
+      if (a != null) col.insertAdjacentHTML('beforeend', '<div class="cal-blk" style="top:' + (a - CAL_START) * PX + 'px;height:' + (b - a) * PX + 'px"></div>');
+    });
+    allRdv.filter(r => r.date === k && r.statut !== 'annule').forEach(r => {
+      const a = toMin(r.heure); if (a == null) return;
+      const dur = durMin(r.duree);
+      const ev = document.createElement('button');
+      ev.type = 'button';
+      ev.className = 'cal-ev ' + (r.statut === 'confirme' ? 'conf' : 'pend');
+      ev.style.top = (a - CAL_START) * PX + 1 + 'px';
+      ev.style.height = Math.max(dur * PX - 2, 22) + 'px';
+      ev.innerHTML = '<b>' + esc(r.heure) + ' · ' + esc(r.nom_client) + '</b>' +
+        (dur >= 45 ? '<small>' + esc(r.soin) + '</small>' : '') + (r.statut === 'en_attente' && dur >= 60 ? '<small>À confirmer</small>' : '');
+      ev.title = r.heure + ' — ' + r.nom_client + ' · ' + r.soin;
+      ev.addEventListener('click', () => {
+        showSelected(r);
+        if (matchMedia('(max-width: 860px)').matches) agendaSelected.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      col.appendChild(ev);
+    });
+    if (k === todayK) {
+      const n = new Date(); const m = n.getHours() * 60 + n.getMinutes();
+      if (m > CAL_START && m < CAL_END) col.insertAdjacentHTML('beforeend', '<div class="cal-now" style="top:' + (m - CAL_START) * PX + 'px"></div>');
+    }
+    body.appendChild(col);
+  });
+}
+
+function calStep(dir) {
+  if (calState.view === 'week') calState.date = addDays(calState.date, 7 * dir);
+  else { let d = addDays(calState.date, dir); while (!isOpen(d)) d = addDays(d, dir); calState.date = d; }
+  renderCal();
+}
+document.getElementById('cal-prev').addEventListener('click', () => calStep(-1));
+document.getElementById('cal-next').addEventListener('click', () => calStep(1));
+document.getElementById('cal-today').addEventListener('click', () => {
+  let d = new Date(); if (calState.view === 'day') while (!isOpen(d)) d = addDays(d, 1);
+  calState.date = d; renderCal();
+});
+document.querySelectorAll('.cal-view').forEach(b => b.addEventListener('click', () => {
+  calState.view = b.dataset.view;
+  if (calState.view === 'day' && !isOpen(calState.date)) { let d = new Date(calState.date); while (!isOpen(d)) d = addDays(d, 1); calState.date = d; }
+  renderCal();
+}));
+if (calState.view === 'day') { let d = new Date(); while (!isOpen(d)) d = addDays(d, 1); calState.date = d; }
 
 /* ------- Disponibilités / créneaux bloqués ------- */
 const dispoDate = document.getElementById('dispo-date');
