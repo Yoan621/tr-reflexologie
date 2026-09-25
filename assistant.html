@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant — Espace praticienne — TR Réflexologie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/bo-common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-config.js"></script>
+<style>
+  #chat-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;height:100dvh;background:#F6EEE0}
+  .chat-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(16px,3vw,32px);border-bottom:1px solid #E6DECE;background:#FDFBF6}
+  .chat-top h1{margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:24px;color:#2F3B27}
+  .chat-new{display:flex;align-items:center;gap:6px;border:1px solid #D8CEB9;background:#FDFBF6;color:#405035;border-radius:999px;padding:8px 14px;font-family:'Work Sans',sans-serif;font-size:13px;cursor:pointer}
+  #chat-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 16px 12px}
+  .chat-col{max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+  .chat-welcome{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:8vh 4px 12px}
+  .chat-welcome .mark{width:54px;height:54px;border-radius:50%;background:#405035;color:#F6EEE0;display:flex;align-items:center;justify-content:center;font-size:22px}
+  .chat-welcome h2{margin:6px 0 0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:clamp(28px,5vw,38px);color:#2F3B27}
+  .chat-welcome p{margin:0;color:#6B6F5B;font-size:15px}
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:22px}
+  .chip{text-align:left;border:1px solid #E0D7C4;background:#FDFBF6;border-radius:14px;padding:14px 16px;font-family:'Work Sans',sans-serif;font-size:14px;color:#3E4335;cursor:pointer;line-height:1.35;transition:border-color .15s,background .15s}
+  .chip:hover{border-color:#405035;background:#fff}
+  .chip span{display:block;font-size:12px;color:#8A8B78;margin-top:3px}
+  .msg-user{align-self:flex-end;max-width:85%;background:#E9E0CE;color:#23281E;padding:11px 16px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+  .msg-ai{display:flex;gap:12px;align-items:flex-start}
+  .msg-ai .av{width:30px;height:30px;border-radius:50%;background:#405035;color:#F6EEE0;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px}
+  .msg-ai .txt{flex:1;min-width:0;font-size:15.5px;line-height:1.65;color:#23281E;word-wrap:break-word}
+  .txt p{margin:0 0 10px}.txt p:last-child{margin-bottom:0}
+  .txt ul,.txt ol{margin:4px 0 10px;padding-left:20px}.txt li{margin:4px 0}
+  .txt strong{font-weight:600;color:#2F3B27}
+  .txt h4{margin:12px 0 6px;font-size:15.5px;font-weight:600;color:#2F3B27}
+  .txt a{color:#405035;text-decoration:underline}
+  .msg-err{color:#A8542F}
+  .dots{display:inline-flex;gap:5px;padding:10px 0}
+  .dots i{width:7px;height:7px;border-radius:50%;background:#8A8B78;animation:blink 1.2s infinite ease-in-out}
+  .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+  .composer-wrap{padding:8px 16px 14px;background:linear-gradient(rgba(246,238,224,0),#F6EEE0 30%)}
+  .composer{max-width:740px;margin:0 auto;display:flex;align-items:flex-end;gap:8px;background:#fff;border:1px solid #DED4BF;border-radius:24px;padding:8px 8px 8px 18px;box-shadow:0 4px 18px rgba(47,59,39,.08)}
+  .composer:focus-within{border-color:#405035}
+  #chat-input{flex:1;border:none;outline:none !important;resize:none;background:transparent;font-size:15.5px;line-height:1.45;color:#23281E;max-height:160px;padding:8px 0;font-family:'Work Sans',sans-serif}
+  #chat-send{width:40px;height:40px;border-radius:50%;border:none;background:#405035;color:#F6EEE0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:opacity .15s}
+  #chat-send:disabled{opacity:.35;cursor:default}
+  .composer-hint{max-width:740px;margin:7px auto 0;text-align:center;font-size:11.5px;color:#8A8B78}
+  @media (max-width:860px){
+    #chat-main{height:calc(100dvh - 54px - env(safe-area-inset-top))}
+    .chat-top{padding:10px 14px}.chat-top h1{font-size:20px}
+    #chat-scroll{padding:16px 12px 8px}
+    .chat-welcome{padding:4vh 0 8px}
+    .chips{grid-template-columns:1fr;gap:8px;margin-top:14px}
+    .chip{padding:12px 14px}
+    .composer-wrap{padding:6px 10px 10px}
+    .composer-hint{display:none}
+    .hide-sm{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#405035">
+<form id="login-form" style="width:min(340px,90vw);background:#F6EEE0;border-radius:6px;padding:36px 30px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;mix-blend-mode:multiply">
+<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Espace praticienne</span>
+<input id="login-username" type="text" required placeholder="Identifiant" autocomplete="username" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<input id="login-password" type="password" required placeholder="Mot de passe" autocomplete="current-password" style="width:100%;padding:12px 14px;border:1px solid #D8CEB9;background:#FDFBF6;border-radius:2px;font-size:14px;color:#23281E">
+<button type="submit" id="login-btn" style="width:100%;height:46px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Se connecter</button>
+<span id="login-error" style="display:none;color:#a03a3a;font-size:12.5px"></span>
+</form>
+</div>
+
+<div id="dashboard" style="display:none;min-height:100vh;background:#F6EEE0">
+
+<aside style="flex:0 0 246px;background:#405035;color:#F6EEE0;padding:26px 20px;display:flex;flex-direction:column;gap:30px;position:sticky;top:0;height:100vh">
+<div style="display:flex;align-items:center;gap:10px">
+<img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:56px;width:auto;display:block;background:#F6EEE0;border-radius:3px;padding:2px">
+<span style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Espace<br>praticienne</span>
+</div>
+<nav style="display:flex;flex-direction:column;gap:4px">
+<a class="navbtn" data-tab="dashboard" href="dashboard.html">Dashboard</a>
+<a class="navbtn" data-tab="agenda" href="agenda.html">Agenda</a>
+<a class="navbtn" data-tab="assistant" href="assistant.html">Assistant</a>
+<a class="navbtn" data-tab="clients" href="clients.html">Fiches clients</a>
+<a class="navbtn" data-tab="factures" href="factures.html">Factures</a>
+<a class="navbtn" data-tab="bons" href="bons.html">Bons d'achat</a>
+<a class="navbtn" data-tab="blog" href="blog.html">Blog</a>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid rgba(246,238,224,.2)">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#5B6B4C;font-size:13px">N</span>
+<span style="display:flex;flex-direction:column;line-height:1.3"><span style="font-size:13.5px">Nathalie</span><span style="font-size:11px;color:#A9B39A">Réflexologue</span></span>
+</div>
+<button type="button" id="logout-btn" style="background:none;border:none;color:#A9B39A;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Sortir</button>
+</div>
+</div>
+</aside>
+
+<main id="chat-main">
+<div class="chat-top">
+<h1>Assistant</h1>
+<button type="button" class="chat-new" id="chat-new"><span aria-hidden="true">＋</span> Nouvelle<span class="hide-sm">&nbsp;conversation</span></button>
+</div>
+
+<div id="chat-scroll">
+<div class="chat-col" id="chat-log">
+<div class="chat-welcome" id="chat-welcome">
+<div class="mark" aria-hidden="true">✦</div>
+<h2 id="chat-hello">Bonjour Nathalie</h2>
+<p>Posez-moi une question sur vos rendez-vous, vos clients ou vos factures.</p>
+<div class="chips">
+<button type="button" class="chip" data-q="Qui a réservé cette semaine ?">Qui a réservé cette semaine ?<span>Résumé des rendez-vous</span></button>
+<button type="button" class="chip" data-q="Quels sont mes rendez-vous de demain ?">Mes rendez-vous de demain<span>Heures, soins, téléphones</span></button>
+<button type="button" class="chip" data-q="Quelles demandes de rendez-vous sont encore à confirmer ?">Demandes à confirmer<span>Réservations en attente</span></button>
+<button type="button" class="chip" data-q="Combien ai-je encaissé ce mois-ci ?">Mon chiffre du mois<span>Factures payées</span></button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="composer-wrap">
+<form class="composer" id="chat-form">
+<textarea id="chat-input" rows="1" placeholder="Écrivez votre question…" aria-label="Votre question"></textarea>
+<button type="submit" id="chat-send" disabled aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+</form>
+<div class="composer-hint">L'assistant consulte vos données en lecture seule. Vérifiez les informations importantes.</div>
+</div>
+</main>
+</div>
+
+<script src="assets/bo-common.js"></script>
+<script>
+BO.initNav('assistant');
+(function () {
+  const log = document.getElementById('chat-log');
+  const scroller = document.getElementById('chat-scroll');
+  const welcome = document.getElementById('chat-welcome');
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('chat-input');
+  const send = document.getElementById('chat-send');
+  const STORE = 'tr-bo-assistant';
+  let history = [];
+  let busy = false;
+
+  const h = new Date().getHours();
+  document.getElementById('chat-hello').textContent = (h >= 18 || h < 5 ? 'Bonsoir' : 'Bonjour') + ' Nathalie';
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Mini-markdown sur du texte deja echappe : titres, listes, gras, italique, liens tel.
+  function md(src) {
+    const inline = t => t
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*(?!\s)(.+?)\*/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])((?:\+33\s?|0)[1-9](?:[\s.]?\d{2}){4})/g, (m, p, n) => p + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>');
+    const out = []; let list = null;
+    esc(src).split('\n').forEach(line => {
+      const ul = /^\s*[-*•]\s+(.*)/.exec(line), ol = /^\s*\d+[.)]\s+(.*)/.exec(line), hd = /^\s*#{1,6}\s+(.*)/.exec(line);
+      const type = ul ? 'ul' : ol ? 'ol' : null;
+      if (list && list.type !== type) { out.push('</' + list.type + '>'); list = null; }
+      if (type) {
+        if (!list) { list = { type }; out.push('<' + type + '>'); }
+        out.push('<li>' + inline((ul || ol)[1]) + '</li>');
+      } else if (hd) out.push('<h4>' + inline(hd[1]) + '</h4>');
+      else if (line.trim()) out.push('<p>' + inline(line) + '</p>');
+    });
+    if (list) out.push('</' + list.type + '>');
+    return out.join('');
+  }
+
+  const toBottom = () => { scroller.scrollTop = scroller.scrollHeight; };
+  function addUser(text) {
+    const d = document.createElement('div'); d.className = 'msg-user'; d.textContent = text; log.appendChild(d);
+  }
+  function addAi(html, cls) {
+    const d = document.createElement('div'); d.className = 'msg-ai';
+    d.innerHTML = '<span class="av" aria-hidden="true">✦</span><div class="txt ' + (cls || '') + '">' + html + '</div>';
+    log.appendChild(d); return d;
+  }
+  function save() { try { sessionStorage.setItem(STORE, JSON.stringify(history)); } catch (_) {} }
+  function render() {
+    log.querySelectorAll('.msg-user,.msg-ai').forEach(n => n.remove());
+    welcome.style.display = history.length ? 'none' : '';
+    history.forEach(m => m.role === 'user' ? addUser(m.content) : addAi(md(m.content)));
+    toBottom();
+  }
+
+  function autoGrow() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    send.disabled = busy || !input.value.trim();
+  }
+
+  async function ask(text) {
+    text = text.trim();
+    if (!text || busy) return;
+    busy = true;
+    welcome.style.display = 'none';
+    history.push({ role: 'user', content: text }); save();
+    addUser(text);
+    input.value = ''; autoGrow();
+    const pending = addAi('<span class="dots"><i></i><i></i><i></i></span>');
+    toBottom();
+    try {
+      const { data, error } = await BO.sb.functions.invoke('bo-assistant', { body: { messages: history } });
+      if (error) {
+        let code = '';
+        try { code = (await error.context.json()).error; } catch (_) {}
+        throw new Error(code || 'server_error');
+      }
+      history.push({ role: 'assistant', content: data.reply }); save();
+      pending.querySelector('.txt').innerHTML = md(data.reply);
+    } catch (e) {
+      history.pop(); save();
+      const msg = e.message === 'missing_key' ? "L'assistant n'est pas encore activé. Prévenez Yoan."
+        : e.message === 'unauthorized' ? 'Votre session a expiré. Rechargez la page et reconnectez-vous.'
+        : 'Oups, je n’ai pas pu répondre. Vérifiez la connexion internet et réessayez.';
+      pending.querySelector('.txt').classList.add('msg-err');
+      pending.querySelector('.txt').textContent = msg;
+    } finally {
+      busy = false; autoGrow(); toBottom();
+      if (!matchMedia('(pointer:coarse)').matches) input.focus();
+    }
+  }
+
+  input.addEventListener('input', autoGrow);
+  input.addEventListener('keydown', e => {
+    // Entree = envoyer sur ordinateur ; sur telephone, le bouton sert a envoyer.
+    if (e.key === 'Enter' && !e.shiftKey && !matchMedia('(pointer:coarse)').matches) { e.preventDefault(); ask(input.value); }
+  });
+  form.addEventListener('submit', e => { e.preventDefault(); ask(input.value); });
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => ask(c.dataset.q)));
+  document.getElementById('chat-new').addEventListener('click', () => { history = []; save(); render(); input.value = ''; autoGrow(); });
+
+  // La conversation contient des donnees clients : on l'efface a la deconnexion.
+  document.getElementById('logout-btn').addEventListener('click', () => { history = []; save(); render(); });
+
+  BO.initAuth(() => {
+    try { history = JSON.parse(sessionStorage.getItem(STORE) || '[]'); } catch (_) { history = []; }
+    render(); autoGrow();
+  });
+})();
+</script>
+</body>
+</html>
