@@ -47,6 +47,29 @@
   .cal-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
   .cal-legend i.hatch{background:repeating-linear-gradient(45deg,#D9D1BF 0,#D9D1BF 2px,#F1ECE1 2px,#F1ECE1 4px)}
 
+  .search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;min-width:300px;max-height:360px;overflow-y:auto;background:#FDFBF6;border:1px solid #E0D7C4;border-radius:8px;box-shadow:0 10px 30px rgba(47,59,39,.15);z-index:30;padding:4px}
+  .sr-item{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:10px 12px;border:none;background:none;border-radius:6px;cursor:pointer;font-family:'Work Sans',sans-serif;font-size:14px;color:#2F3B27}
+  .sr-item:hover,.sr-item:focus{background:#F1EBDD;outline:none}
+  .sr-item small{font-size:12px;color:#8A8B78}
+  .sr-empty{padding:12px;font-size:13px;color:#8A8B78}
+  .rdv-modal{border:none;border-radius:14px;padding:0;width:min(480px,94vw);max-height:92dvh;background:#FDFBF6;color:#23281E;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .rdv-modal::backdrop{background:rgba(35,40,30,.45)}
+  .rdv-modal form{display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px}
+  .rm-head{display:flex;align-items:center;justify-content:space-between}
+  .rm-head h2{margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:24px;color:#2F3B27}
+  .rm-x{border:none;background:none;font-size:18px;color:#8A8B78;cursor:pointer;padding:6px}
+  .rdv-modal label{display:flex;flex-direction:column;gap:5px;font-size:12px;letter-spacing:.04em;color:#6B6F5B;flex:1;min-width:0}
+  .rdv-modal input:not([type=radio]),.rdv-modal select{width:100%;padding:11px 12px;border:1px solid #D8CEB9;background:#fff;border-radius:6px;font-size:15px;color:#23281E}
+  .rm-row{display:flex;gap:10px}
+  .rm-status{display:flex;gap:18px}
+  .rm-status label{flex-direction:row;align-items:center;gap:6px;font-size:14px;color:#3E4335;flex:0 0 auto}
+  .rm-msg{margin:0;padding:10px 12px;border-radius:6px;background:#F7E4DC;color:#8A3A1E;font-size:13.5px}
+  .rm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+  .rm-cancel{padding:11px 18px;border:1px solid #D8CEB9;background:#FDFBF6;color:#3E4335;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer}
+  .rm-ok{padding:11px 22px;border:none;background:#405035;color:#F6EEE0;border-radius:999px;font-family:'Work Sans',sans-serif;font-size:14px;cursor:pointer}
+  .rm-ok:disabled{opacity:.5}
+  .cal-col.open{cursor:pointer}
+
   @media (max-width: 860px){
     #agenda-content{padding:14px !important;gap:16px !important}
     #agenda-week{flex:1 1 100% !important;min-width:0 !important}
@@ -56,7 +79,11 @@
     .cal-bar{padding:12px}
     .cal-today{padding:8px 10px}
     #site-header{padding:14px !important}
-    #site-header .search-box{display:none !important}
+    #site-header > div:last-child{width:100%}
+    #site-header .search-box{flex:1 1 100%}
+    #agenda-search{width:100% !important;font-size:16px !important}
+    #new-rdv-btn{flex:1 1 100%}
+    .rm-row{flex-direction:column}
   }
 </style>
 </head>
@@ -113,11 +140,12 @@
 <span style="font-size:12.5px;color:#8A8B78">Mardi à vendredi 10 h – 20 h · samedi 9 h – 12 h</span>
 </div>
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-<div class="search-box" style="display:flex;align-items:center;gap:9px;padding:0 14px;height:44px;background:#F6EEE0;border:1px solid #E0D7C4;border-radius:3px">
-<span style="font-size:13px;color:#8A8B78">Rechercher</span>
-<input type="text" placeholder="client, téléphone…" style="border:none;background:transparent;font-size:13.5px;color:#23281E;outline:none;width:150px">
+<div class="search-box" style="position:relative;display:flex;align-items:center;gap:9px;padding:0 14px;height:44px;background:#F6EEE0;border:1px solid #E0D7C4;border-radius:3px">
+<span style="font-size:13px;color:#8A8B78" aria-hidden="true">⌕</span>
+<input type="search" id="agenda-search" placeholder="Rechercher un client, un téléphone…" autocomplete="off" style="border:none;background:transparent;font-size:13.5px;color:#23281E;outline:none;width:220px">
+<div id="search-results" class="search-results" hidden></div>
 </div>
-<button type="button" class="hoverable" style="height:44px;padding:0 22px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">+ Nouveau rendez-vous</button>
+<button type="button" id="new-rdv-btn" class="hoverable" style="height:44px;padding:0 22px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">+ Nouveau rendez-vous</button>
 </div>
 </header>
 
@@ -175,6 +203,22 @@
 
 </main>
 </div>
+
+
+<dialog id="rdv-modal" class="rdv-modal">
+<form id="rdv-form" method="dialog">
+<div class="rm-head"><h2>Nouveau rendez-vous</h2><button type="button" class="rm-x" id="rdv-close" aria-label="Fermer">✕</button></div>
+<label>Nom du client *<input id="rf-nom" required autocomplete="off" list="rf-clients"></label>
+<datalist id="rf-clients"></datalist>
+<div class="rm-row"><label>Téléphone<input id="rf-tel" type="tel" autocomplete="off"></label><label>Email<input id="rf-email" type="email" autocomplete="off"></label></div>
+<label>Soin<select id="rf-soin"><option>Réflexologie plantaire</option><option>Réflexologie palmaire</option><option>Réflexologie crânienne</option><option>Dien Chan</option></select></label>
+<label>Durée<select id="rf-duree"><option value="30 minutes · 35 €">30 minutes · 35 €</option><option value="1 heure · 50 €" selected>1 heure · 50 €</option><option value="2 heures · 75 €">2 heures · 75 €</option><option value="Forfait 3 séances d'1 heure · 140 €">Forfait 3 séances d'1 h · 140 €</option></select></label>
+<div class="rm-row"><label>Date *<input id="rf-date" type="date" required></label><label>Heure *<select id="rf-heure" required></select></label></div>
+<div class="rm-status"><label><input type="radio" name="rf-statut" value="confirme" checked> Confirmé</label><label><input type="radio" name="rf-statut" value="en_attente"> À confirmer</label></div>
+<p id="rf-msg" class="rm-msg" hidden></p>
+<div class="rm-actions"><button type="button" class="rm-cancel" id="rdv-cancel">Annuler</button><button type="submit" class="rm-ok" id="rf-submit">Enregistrer</button></div>
+</form>
+</dialog>
 
 <script src="assets/bo-common.js"></script>
 <script>
@@ -344,7 +388,8 @@ function renderCal() {
   days.forEach(d => {
     const k = keyOf(d);
     const col = document.createElement('div');
-    col.className = 'cal-col' + (isOpen(d) ? '' : ' closed');
+    col.className = 'cal-col' + (isOpen(d) ? ' open' : ' closed');
+    col.dataset.k = k;
     col.style.height = height + 'px';
     // heures fermees du jour (avant ouverture / apres fermeture)
     if (isOpen(d)) {
@@ -399,6 +444,109 @@ document.querySelectorAll('.cal-view').forEach(b => b.addEventListener('click', 
   renderCal();
 }));
 if (calState.view === 'day') { let d = new Date(); while (!isOpen(d)) d = addDays(d, 1); calState.date = d; }
+
+/* ------- Nouveau rendez-vous ------- */
+const rdvModal = document.getElementById('rdv-modal');
+const rf = id => document.getElementById(id);
+function fillHeures(pref) {
+  const d = rf('rf-date').value ? new Date(rf('rf-date').value + 'T12:00:00') : null;
+  const sel = rf('rf-heure');
+  sel.innerHTML = '';
+  const slots = d ? slotsForDow(d.getDay()) : [];
+  if (!slots.length) { sel.innerHTML = '<option value="">Cabinet fermé ce jour</option>'; return; }
+  const k = rf('rf-date').value, dur = durMin(rf('rf-duree').value);
+  const taken = allRdv.filter(r => r.date === k && r.statut !== 'annule').map(r => [toMin(r.heure), toMin(r.heure) + durMin(r.duree)]);
+  slots.forEach(h => {
+    const a = toMin(h), b = a + dur;
+    const busy = taken.some(([x, y]) => x < b && y > a);
+    const o = document.createElement('option');
+    o.value = h; o.textContent = h + (busy ? ' — occupé' : ''); o.disabled = busy;
+    sel.appendChild(o);
+  });
+  const want = [...sel.options].find(o => o.value === pref && !o.disabled) || [...sel.options].find(o => !o.disabled);
+  if (want) want.selected = true;
+}
+function openNewRdv(dateKey, heure) {
+  rf('rdv-form').reset();
+  rf('rf-msg').hidden = true;
+  let d = calState.date; if (!isOpen(d)) { d = new Date(d); while (!isOpen(d)) d = addDays(d, 1); }
+  rf('rf-date').value = dateKey || keyOf(d);
+  const dl = rf('rf-clients'); dl.innerHTML = '';
+  [...new Set(allRdv.map(r => r.nom_client))].slice(0, 300).forEach(n => { const o = document.createElement('option'); o.value = n; dl.appendChild(o); });
+  fillHeures(heure);
+  rdvModal.showModal();
+  if (!matchMedia('(pointer:coarse)').matches) rf('rf-nom').focus();
+}
+rf('rf-nom').addEventListener('change', () => { // client connu : pre-remplit tel/email
+  const last = [...allRdv].reverse().find(r => r.nom_client === rf('rf-nom').value);
+  if (last) { if (!rf('rf-tel').value) rf('rf-tel').value = last.telephone || ''; if (!rf('rf-email').value) rf('rf-email').value = last.email || ''; }
+});
+rf('rf-date').addEventListener('change', () => fillHeures(rf('rf-heure').value));
+rf('rf-duree').addEventListener('change', () => fillHeures(rf('rf-heure').value));
+rf('new-rdv-btn').addEventListener('click', () => openNewRdv());
+rf('rdv-close').addEventListener('click', () => rdvModal.close());
+rf('rdv-cancel').addEventListener('click', () => rdvModal.close());
+rf('rdv-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = rf('rf-msg'); msg.hidden = true;
+  if (!rf('rf-heure').value) { msg.textContent = 'Choisissez une heure disponible.'; msg.hidden = false; return; }
+  const duree = rf('rf-duree').value;
+  const payload = {
+    nom_client: rf('rf-nom').value.trim(), telephone: rf('rf-tel').value.trim() || null, email: rf('rf-email').value.trim() || null,
+    soin: rf('rf-soin').value, duree, prix: Number((duree.match(/(\d+)\s*€/) || [])[1]) || null,
+    date: rf('rf-date').value, heure: rf('rf-heure').value,
+    statut: document.querySelector('input[name="rf-statut"]:checked').value, source: 'manuel'
+  };
+  const btn = rf('rf-submit'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const { error } = await sb.from('rendez_vous').insert(payload);
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+  if (error) {
+    msg.textContent = /CRENEAU_INDISPONIBLE/.test(error.message) ? 'Ce créneau chevauche un autre rendez-vous. Choisissez une autre heure ou une durée plus courte.'
+      : /CHAMP_INVALIDE/.test(error.message) ? 'Les caractères < et > ne sont pas autorisés.' : 'Erreur : ' + error.message;
+    msg.hidden = false; return;
+  }
+  rdvModal.close();
+  calState.date = new Date(payload.date + 'T12:00:00');
+  await loadAgenda();
+});
+// Clic sur une zone libre du calendrier : nouveau RDV pre-rempli a cette heure.
+document.getElementById('agenda-weekgrid').addEventListener('click', (e) => {
+  const col = e.target.closest('.cal-col');
+  if (!col || e.target.closest('.cal-ev') || !col.dataset.k) return;
+  const d = new Date(col.dataset.k + 'T12:00:00'); if (!isOpen(d)) return;
+  const y = e.clientY - col.getBoundingClientRect().top;
+  const m = Math.floor((CAL_START + y / PX) / 30) * 30;
+  openNewRdv(col.dataset.k, Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0'));
+});
+
+/* ------- Recherche ------- */
+const searchIn = document.getElementById('agenda-search');
+const searchOut = document.getElementById('search-results');
+const norm = v => String(v || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[\s.]/g, '');
+searchIn.addEventListener('input', () => {
+  const q = norm(searchIn.value);
+  if (q.length < 2) { searchOut.hidden = true; return; }
+  const today = keyOf(new Date());
+  const hits = allRdv.filter(r => norm(r.nom_client).includes(q) || norm(r.telephone).includes(q) || norm(r.email).includes(q))
+    .sort((a, b) => (a.date >= today) - (b.date >= today) || (a.date >= today ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)))
+    .reverse().slice(0, 12);
+  searchOut.innerHTML = hits.length ? '' : '<div class="sr-empty">Aucun rendez-vous trouvé.</div>';
+  hits.forEach(r => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sr-item';
+    b.innerHTML = '<span>' + esc(r.nom_client) + '</span><small>' + dfmt(r.date) + ' · ' + esc(r.heure) + ' · ' + esc(r.soin) +
+      (r.statut === 'annule' ? ' · annulé' : r.statut === 'en_attente' ? ' · à confirmer' : '') + '</small>';
+    b.addEventListener('click', () => {
+      searchOut.hidden = true; searchIn.value = '';
+      calState.view = 'day'; calState.date = new Date(r.date + 'T12:00:00'); renderCal(); showSelected(r);
+      document.getElementById('agenda-week').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    searchOut.appendChild(b);
+  });
+  searchOut.hidden = false;
+});
+document.addEventListener('click', e => { if (!e.target.closest('.search-box')) searchOut.hidden = true; });
+searchIn.addEventListener('keydown', e => { if (e.key === 'Escape') { searchOut.hidden = true; searchIn.blur(); } });
 
 /* ------- Disponibilités / créneaux bloqués ------- */
 const dispoDate = document.getElementById('dispo-date');
