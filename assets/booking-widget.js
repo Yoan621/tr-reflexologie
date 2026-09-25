@@ -90,25 +90,63 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
-  // Creneaux deja pris (RDV non annules) ou bloques a la main par la praticienne.
+  // "17h30" -> 1050 (minutes depuis minuit)
+  function toMin(h) {
+    const m = /^\s*(\d{1,2})\s*[h:]\s*(\d{0,2})/.exec(h || '');
+    return m ? Number(m[1]) * 60 + Number(m[2] || 0) : null;
+  }
+  // "30 minutes · 35 €" -> 30, "2 heures · 75 €" -> 120, "Forfait 3 séances d'1 heure" -> 60
+  function durMin(d) {
+    const mn = /(\d+)\s*min/.exec(d || '');
+    if (mn) return Number(mn[1]);
+    const hr = /(\d+)\s*heure/.exec(d || '');
+    return hr ? Number(hr[1]) * 60 : 60;
+  }
+
+  let dayRanges = [];   // plages occupees du jour affiche : [[debut, fin], ...] en minutes
+  let dayClose = 0;     // heure de fermeture du jour affiche (minutes)
+
+  // Creneaux deja pris (RDV non annules, duree comprise) ou bloques a la main par la praticienne.
   async function blockedSlots(date) {
     try {
       const sb = window.getSupabase();
       const { data, error } = await sb
         .from('disponibilite_bloquee')
-        .select('heure')
+        .select('heure,duree_min')
         .eq('date', dateKey(date));
       if (error) throw error;
-      const set = new Set();
+      const ranges = [];
       let fullDay = false;
-      (data || []).forEach(r => { if (r.heure == null) fullDay = true; else set.add(r.heure); });
-      return { set, fullDay };
+      (data || []).forEach(r => {
+        if (r.heure == null) { fullDay = true; return; }
+        const s = toMin(r.heure);
+        if (s != null) ranges.push([s, s + (r.duree_min || 30)]);
+      });
+      return { ranges, fullDay };
     } catch (_) {
-      return { set: new Set(), fullDay: false }; // en cas d'erreur reseau, on n'empeche pas la reservation
+      return { ranges: [], fullDay: false }; // erreur reseau : la base refusera quand meme un doublon a l'insertion
     }
   }
 
-  async function renderSlots(date) {
+  function isFree(start, minutes) {
+    const end = start + minutes;
+    if (end > dayClose) return false;
+    return !dayRanges.some(([s, e]) => s < end && e > start);
+  }
+
+  // Grise les durees qui depasseraient sur un RDV suivant ou sur la fermeture.
+  function refreshDurations() {
+    const start = toMin(selectedSlot);
+    durationType?.querySelectorAll('.duration-option').forEach(btn => {
+      const ok = start != null && isFree(start, durMin(btn.getAttribute('data-duration')));
+      btn.disabled = !ok;
+      btn.style.opacity = ok ? '' : '.4';
+      btn.style.pointerEvents = ok ? '' : 'none';
+      btn.title = ok ? '' : 'Durée non disponible à cette heure';
+    });
+  }
+
+  async function renderSlots(date, keepMessage) {
     const dow = date.getDay();
     const dateLabel = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
     slotsLabel.textContent = 'Créneaux du ' + dateLabel;
@@ -116,20 +154,33 @@
     careType.style.display = 'none';
     durationType.style.display = 'none';
     form.style.display = 'none';
-    confirmed.style.display = 'none';
+    if (!keepMessage) confirmed.style.display = 'none';
+    errorEl.style.display = 'none';
 
-    const { set: blocked, fullDay } = await blockedSlots(date);
-    const slots = fullDay ? [] : slotsForDay(dow).filter(s => !blocked.has(s));
+    const { ranges, fullDay } = await blockedSlots(date);
+    const all = slotsForDay(dow);
+    dayRanges = ranges;
+    dayClose = all.length ? toMin(all[all.length - 1]) + 30 : 0;
     slotsWrap.innerHTML = '';
-    if (!slots.length) {
+    if (fullDay || !all.length) {
       slotsWrap.innerHTML = '<span style="font-size:13px;color:#8A8B78">Aucun créneau disponible ce jour. Choisissez une autre date.</span>';
       return;
     }
 
-    slots.forEach(slot => {
+    all.forEach(slot => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = slot;
+      if (!isFree(toMin(slot), 30)) {
+        // Creneau deja reserve : affiche mais non cliquable.
+        btn.disabled = true;
+        btn.title = 'Non disponible, un client a déjà réservé cet horaire';
+        btn.setAttribute('aria-label', slot + ' — non disponible');
+        btn.innerHTML = '<span style="text-decoration:line-through">' + slot + '</span><span style="display:block;font-size:10px;letter-spacing:.02em">Non disponible</span>';
+        btn.style.cssText = 'padding:5px 6px;border:1px dashed #C7C2AE;color:#A9A590;background:#EFE9DC;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;line-height:1.15;cursor:not-allowed;text-align:center';
+        slotsWrap.appendChild(btn);
+        return;
+      }
       btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:background .15s ease,color .15s ease';
       // Survol : vert sapin plein pour reperer le creneau vise (btn cree dynamiquement,
       // le handler global .hoverable de index.html ne l'attrape pas).
@@ -138,6 +189,7 @@
       btn.addEventListener('click', () => {
         selectedDateLabel = dateLabel;
         selectedSlot = slot;
+        refreshDurations();
         if (PRESELECT_CARE) {
           selectedCare = PRESELECT_CARE;
           careType.style.display = 'none';
@@ -171,6 +223,7 @@
   let selectedDuration = '';
   durationType?.querySelectorAll('.duration-option').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.disabled) return;
       selectedDuration = btn.getAttribute('data-duration');
       recap.textContent = selectedCare + ' (' + selectedDuration + '), le ' + selectedDateLabel + ' à ' + selectedSlot;
       durationType.style.display = 'none';
@@ -210,10 +263,21 @@
       const sb = window.getSupabase();
       const { error } = await sb.from('rendez_vous').insert(payload);
       if (error) throw error;
-      form.style.display = 'none';
+      form.reset();
       confirmed.style.display = 'block';
       confirmed.textContent = 'Demande envoyée, ' + recap.textContent + '. Vous recevrez une confirmation par email.';
+      // Recharge les creneaux : celui qui vient d'etre pris passe en "Non disponible".
+      renderSlots(selectedDate, true);
     } catch (err) {
+      if (/CRENEAU_INDISPONIBLE/.test(err?.message || '')) {
+        // Quelqu'un a reserve ce creneau entre-temps : on rafraichit la liste.
+        // (message affiche dans `confirmed` : `errorEl` est dans le formulaire, masque par renderSlots)
+        await renderSlots(selectedDate);
+        confirmed.textContent = 'Désolé, ce créneau vient d’être réservé par un autre client. Merci d’en choisir un autre.';
+        confirmed.style.display = 'block';
+        confirmed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
       errorEl.textContent = "Erreur d'envoi, réessayez ou appelez le cabinet.";
       errorEl.style.display = 'block';
     } finally {
