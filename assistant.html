@@ -216,6 +216,7 @@ BO.initNav('assistant');
       history.pop(); save();
       const msg = e.message === 'missing_key' ? "L'assistant n'est pas encore activé. Prévenez Yoan."
         : e.message === 'unauthorized' ? 'Votre session a expiré. Rechargez la page et reconnectez-vous.'
+        : e.message === 'ai_unavailable' ? 'Le service d’intelligence artificielle est momentanément indisponible. Réessayez dans quelques minutes.'
         : 'Oups, je n’ai pas pu répondre. Vérifiez la connexion internet et réessayez.';
       pending.querySelector('.txt').classList.add('msg-err');
       pending.querySelector('.txt').textContent = msg;
