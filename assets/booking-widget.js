@@ -61,6 +61,7 @@
         btn.addEventListener('mouseleave', () => { if (!isSelected) btn.style.background = 'transparent'; });
         btn.addEventListener('click', () => {
           selectedDate = date;
+          hideHint();
           renderCalendar();
           renderSlots(date);
           const panel = document.getElementById('slots-panel');
@@ -128,7 +129,12 @@
     }
   }
 
+  // Aujourd'hui : les horaires deja passes ne sont plus reservables.
+  let dayMinStart = 0;
+  function nowMin() { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); }
+
   function isFree(start, minutes) {
+    if (start < dayMinStart) return false;
     const end = start + minutes;
     if (end > dayClose) return false;
     return !dayRanges.some(([s, e]) => s < end && e > start);
@@ -161,6 +167,7 @@
     const all = slotsForDay(dow);
     dayRanges = ranges;
     dayClose = all.length ? toMin(all[all.length - 1]) + 30 : 0;
+    dayMinStart = date.getTime() === today.getTime() ? nowMin() + 1 : 0;
     slotsWrap.innerHTML = '';
     if (fullDay || !all.length) {
       slotsWrap.innerHTML = '<span style="font-size:13px;color:#8A8B78">Aucun créneau disponible ce jour. Choisissez une autre date.</span>';
@@ -174,7 +181,7 @@
       if (!isFree(toMin(slot), 30)) {
         // Creneau deja reserve : affiche mais non cliquable.
         btn.disabled = true;
-        btn.title = 'Non disponible, un client a déjà réservé cet horaire';
+        btn.title = 'Non disponible';
         btn.setAttribute('aria-label', slot + ' — non disponible');
         btn.innerHTML = '<span style="text-decoration:line-through">' + slot + '</span><span style="display:block;font-size:10px;letter-spacing:.02em">Non disponible</span>';
         btn.style.cssText = 'padding:5px 6px;border:1px dashed #C7C2AE;color:#A9A590;background:#EFE9DC;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;line-height:1.15;cursor:not-allowed;text-align:center';
@@ -286,5 +293,44 @@
     }
   });
 
+  // Hint affiche sous le calendrier quand une date est presélectionnée automatiquement.
+  let hintEl = null;
+  function hideHint() { if (hintEl) { hintEl.remove(); hintEl = null; } }
+  function showHint() {
+    if (hintEl || !slotsLabel) return;
+    hintEl = document.createElement('span');
+    hintEl.id = 'slots-hint';
+    hintEl.style.cssText = 'display:block;margin:2px 0 8px;font-size:12.5px;line-height:1.5;color:#6B6F5B';
+    hintEl.textContent = 'Nous avons présélectionné la prochaine date disponible : choisissez un horaire, ou cliquez sur un autre jour du calendrier.';
+    slotsLabel.insertAdjacentElement('afterend', hintEl);
+  }
+
+  // Présélectionne la prochaine date ayant au moins un créneau libre (3 semaines max),
+  // pour montrer au visiteur comment on réserve. Pas de scroll : l'utilisateur n'a rien cliqué.
+  async function preselectFirstDay() {
+    for (let i = 0; i < 21; i++) {
+      if (selectedDate) return; // le visiteur a déjà cliqué un jour entre-temps
+      const d = new Date(today);
+      d.setDate(d.getDate() + i);
+      const all = slotsForDay(d.getDay());
+      if (!all.length) continue;
+      const { ranges, fullDay } = await blockedSlots(d);
+      if (fullDay) continue;
+      dayRanges = ranges;
+      dayClose = toMin(all[all.length - 1]) + 30;
+      dayMinStart = i === 0 ? nowMin() + 1 : 0;
+      if (!all.some(slot => isFree(toMin(slot), 30))) continue;
+      if (selectedDate) return;
+      selectedDate = d;
+      viewYear = d.getFullYear();
+      viewMonth = d.getMonth();
+      renderCalendar();
+      await renderSlots(d);
+      showHint();
+      return;
+    }
+  }
+
   renderCalendar();
+  preselectFirstDay();
 })();

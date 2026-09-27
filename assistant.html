@@ -110,12 +110,14 @@
 <div class="chat-welcome" id="chat-welcome">
 <div class="mark" aria-hidden="true">✦</div>
 <h2 id="chat-hello">Bonjour Nathalie</h2>
-<p>Posez-moi une question sur vos rendez-vous, vos clients ou vos factures.</p>
+<p>Posez-moi une question sur vos rendez-vous, vos clients ou vos factures, ou demandez-moi de fermer / rouvrir des créneaux.</p>
 <div class="chips">
 <button type="button" class="chip" data-q="Qui a réservé cette semaine ?">Qui a réservé cette semaine ?<span>Résumé des rendez-vous</span></button>
 <button type="button" class="chip" data-q="Quels sont mes rendez-vous de demain ?">Mes rendez-vous de demain<span>Heures, soins, téléphones</span></button>
 <button type="button" class="chip" data-q="Quelles demandes de rendez-vous sont encore à confirmer ?">Demandes à confirmer<span>Réservations en attente</span></button>
 <button type="button" class="chip" data-q="Combien ai-je encaissé ce mois-ci ?">Mon chiffre du mois<span>Factures payées</span></button>
+<button type="button" class="chip" data-fill="Ferme mes créneaux du  au ">Fermer des créneaux<span>Congés, absence… (à compléter)</span></button>
+<button type="button" class="chip" data-fill="Réouvre mes créneaux du  au ">Rouvrir des créneaux<span>Remettre des jours en réservation</span></button>
 </div>
 </div>
 </div>
@@ -126,7 +128,7 @@
 <textarea id="chat-input" rows="1" placeholder="Écrivez votre question…" aria-label="Votre question"></textarea>
 <button type="submit" id="chat-send" disabled aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 </form>
-<div class="composer-hint">L'assistant consulte vos données en lecture seule. Vérifiez les informations importantes.</div>
+<div class="composer-hint">L'assistant consulte vos données et peut fermer / rouvrir des créneaux (toujours après votre accord). Vérifiez les informations importantes.</div>
 </div>
 </main>
 </div>
@@ -232,7 +234,13 @@ BO.initNav('assistant');
     if (e.key === 'Enter' && !e.shiftKey && !matchMedia('(pointer:coarse)').matches) { e.preventDefault(); ask(input.value); }
   });
   form.addEventListener('submit', e => { e.preventDefault(); ask(input.value); });
-  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => ask(c.dataset.q)));
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    if (c.dataset.q) return ask(c.dataset.q);
+    // Phrase a completer (dates) : on pre-remplit la saisie, curseur apres « du ».
+    input.value = c.dataset.fill; autoGrow(); input.focus();
+    const pos = input.value.indexOf(' du ') + 4; input.setSelectionRange(pos, pos);
+    input.dispatchEvent(new Event('input'));
+  }));
   document.getElementById('chat-new').addEventListener('click', () => { history = []; save(); render(); input.value = ''; autoGrow(); });
 
   // La conversation contient des donnees clients : on l'efface a la deconnexion.

@@ -10,6 +10,29 @@
 <link rel="stylesheet" href="assets/bo-common.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="assets/supabase-config.js"></script>
+<style>
+  .bon-modal{border:none;border-radius:14px;padding:0;width:min(460px,94vw);max-height:92dvh;background:#FDFBF6;color:#23281E;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .bon-modal::backdrop{background:rgba(35,40,30,.45)}
+  .bon-modal form{display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px}
+  .bm-head{display:flex;align-items:center;justify-content:space-between}
+  .bm-head h2{margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:24px;color:#2F3B27}
+  .bm-x{border:none;background:none;font-size:18px;color:#8A8B78;cursor:pointer;padding:6px}
+  .bon-modal label{display:flex;flex-direction:column;gap:5px;font-size:12px;letter-spacing:.04em;color:#6B6F5B}
+  .bon-modal input,.bon-modal select,.bon-modal textarea{width:100%;padding:11px 12px;border:1px solid #D8CEB9;background:#fff;border-radius:6px;font-size:15px;color:#23281E;font-family:inherit}
+  .bon-modal textarea{resize:vertical;min-height:64px}
+  .bm-hint{margin:-4px 0 0;font-size:12px;color:#8A8B78}
+  .bm-msg{margin:0;padding:10px 12px;border-radius:6px;background:#F7E4DC;color:#8A3A1E;font-size:13.5px}
+  .bm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+  .bm-cancel{padding:11px 18px;border:1px solid #D8CEB9;background:#FDFBF6;color:#3E4335;border-radius:999px;font-size:14px;cursor:pointer}
+  .bm-ok{padding:11px 22px;border:none;background:#405035;color:#F6EEE0;border-radius:999px;font-size:14px;cursor:pointer}
+  .bm-ok:disabled{opacity:.5}
+  .bon-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid #EFE8DA;font-size:14px;color:#2F3B27}
+  .bon-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .bon-sub{font-size:12px;color:#8A8B78;overflow-wrap:anywhere}
+  .bon-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .bon-act{padding:6px 12px;border:1px solid #D8CEB9;background:transparent;color:#405035;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .bon-act.del{border-color:#E3C2B5;color:#A8542F}
+</style>
 </head>
 <body>
 
@@ -86,6 +109,19 @@
 </main>
 </div>
 
+<dialog id="bon-modal" class="bon-modal">
+<form id="bon-form" method="dialog">
+<div class="bm-head"><h2>Émettre un bon</h2><button type="button" class="bm-x" id="bon-close" aria-label="Fermer">✕</button></div>
+<label>Type de bon<select id="bf-type"><option value="30 min">30 min · 35 €</option><option value="1 heure" selected>1 heure · 50 €</option><option value="2 heures">2 heures · 75 €</option><option value="Forfait 3 séances">Forfait 3 séances · 140 €</option></select></label>
+<label>Nom du bénéficiaire<input id="bf-nom" autocomplete="off" maxlength="120"></label>
+<label>Email (pour envoyer le bon)<input id="bf-email" type="email" autocomplete="off" maxlength="160" placeholder="facultatif"></label>
+<p class="bm-hint">Si un email est indiqué, le bon cadeau est envoyé automatiquement à cette adresse.</p>
+<label>Petit message (facultatif)<textarea id="bf-message" maxlength="400" placeholder="Joyeux anniversaire !"></textarea></label>
+<p id="bf-msg" class="bm-msg" hidden></p>
+<div class="bm-actions"><button type="button" class="bm-cancel" id="bon-cancel">Annuler</button><button type="submit" class="bm-ok" id="bf-submit">Émettre le bon</button></div>
+</form>
+</dialog>
+
 <script src="assets/bo-common.js"></script>
 <script>
 const sb = BO.sb, money = BO.money, dfmt = BO.dfmt;
@@ -96,6 +132,9 @@ const countEl = document.getElementById('bons-count');
 const addBtn = document.getElementById('bons-add-btn');
 const tierCounts = { '30 min': document.getElementById('bons-count-30'), '1 heure': document.getElementById('bons-count-1h'), '2 heures': document.getElementById('bons-count-2h'), 'Forfait 3 séances': document.getElementById('bons-count-forfait') };
 const tierPrices = { '30 min': 35, '1 heure': 50, '2 heures': 75, 'Forfait 3 séances': 140 };
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const validEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
 async function loadBons() {
   const { data, error } = await sb.from('bons_achat').select('*').order('created_at', { ascending: false });
@@ -110,26 +149,84 @@ async function loadBons() {
   if (!data.length) { listEl.textContent = "Aucun bon émis pour l'instant."; return; }
   data.forEach(b => {
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #EFE8DA;font-size:14px;color:#2F3B27';
+    row.className = 'bon-row';
     const badge = b.statut === 'utilise'
       ? '<span style="padding:4px 10px;border:1px solid #DED4BF;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase">Utilisé</span>'
       : '<span style="padding:4px 10px;background:#E4E7DA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#405035">Valable' + (b.valable_jusquau ? (' jusqu’au ' + dfmt(b.valable_jusquau)) : '') + '</span>';
-    row.innerHTML = '<span>' + b.numero + ' · ' + (b.nom_beneficiaire || 'anonyme') + ' · ' + money(b.montant) + '</span>' + badge;
+    const sent = b.email ? ('Envoyé à ' + esc(b.email) + (b.email_envoye_at ? ' le ' + dfmt(b.email_envoye_at) : '')) : 'Pas envoyé par email';
+    row.innerHTML =
+      '<div class="bon-main"><span>' + esc(b.numero) + ' · ' + esc(b.nom_beneficiaire || 'anonyme') + ' · ' + money(b.montant) + '</span><span class="bon-sub">' + sent + '</span></div>' +
+      '<div class="bon-actions">' + badge + '</div>';
+    const actions = row.querySelector('.bon-actions');
+
+    const mailBtn = document.createElement('button');
+    mailBtn.type = 'button'; mailBtn.className = 'bon-act';
+    mailBtn.textContent = b.email ? 'Renvoyer' : 'Envoyer par email';
+    mailBtn.addEventListener('click', () => sendBon(b));
+    actions.appendChild(mailBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button'; delBtn.className = 'bon-act del';
+    delBtn.textContent = 'Supprimer';
+    delBtn.addEventListener('click', () => deleteBon(b));
+    actions.appendChild(delBtn);
+
     listEl.appendChild(row);
   });
 }
 
-addBtn.addEventListener('click', async () => {
-  const type = prompt("Type de bon : 30 min / 1 heure / 2 heures / Forfait 3 séances");
-  if (!type || !tierPrices[type]) { if (type) alert('Type non reconnu.'); return; }
-  const nom = prompt('Nom du bénéficiaire :') || '';
-  const numero = 'B-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 900 + 100);
+// L'email part tout seul : trigger base `trg_notify_bon_email` -> Edge Function notify-booking.
+async function sendBon(b) {
+  let email = b.email;
+  if (!email) {
+    email = (prompt('Adresse email du destinataire du bon ' + b.numero + ' :') || '').trim();
+    if (!email) return;
+    if (!validEmail(email)) { alert('Adresse email invalide.'); return; }
+  } else if (!confirm('Renvoyer le bon ' + b.numero + ' à ' + email + ' ?')) return;
+  const { error } = await sb.from('bons_achat').update({ email, email_envoye_at: new Date().toISOString() }).eq('id', b.id);
+  if (error) { alert('Envoi impossible : ' + error.message); return; }
+  loadBons();
+}
+
+async function deleteBon(b) {
+  if (!confirm('Supprimer définitivement le bon ' + b.numero + ' (' + (b.nom_beneficiaire || 'anonyme') + ', ' + money(b.montant) + ') ?')) return;
+  const { error } = await sb.from('bons_achat').delete().eq('id', b.id);
+  if (error) { alert('Suppression impossible : ' + error.message); return; }
+  loadBons();
+}
+
+const bonModal = document.getElementById('bon-modal');
+const bf = id => document.getElementById(id);
+addBtn.addEventListener('click', () => {
+  bf('bon-form').reset(); bf('bf-msg').hidden = true;
+  bonModal.showModal();
+});
+bf('bon-close').addEventListener('click', () => bonModal.close());
+bf('bon-cancel').addEventListener('click', () => bonModal.close());
+bf('bon-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = bf('bf-msg'); msg.hidden = true;
+  const type = bf('bf-type').value;
+  const email = bf('bf-email').value.trim();
+  if (email && !validEmail(email)) { msg.textContent = 'Adresse email invalide.'; msg.hidden = false; return; }
   const validUntil = new Date();
   validUntil.setFullYear(validUntil.getFullYear() + 1);
-  await sb.from('bons_achat').insert({
-    numero, nom_beneficiaire: nom, type, montant: tierPrices[type],
-    valable_jusquau: validUntil.toISOString().slice(0, 10)
-  });
+  const valid = `${validUntil.getFullYear()}-${String(validUntil.getMonth() + 1).padStart(2, '0')}-${String(validUntil.getDate()).padStart(2, '0')}`;
+  const btn = bf('bf-submit'); btn.disabled = true; btn.textContent = 'Émission…';
+  let error;
+  for (let i = 0; i < 3; i++) { // numero unique : on retente en cas de collision
+    ({ error } = await sb.from('bons_achat').insert({
+      numero: 'B-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 9000 + 1000),
+      nom_beneficiaire: bf('bf-nom').value.trim(), type, montant: tierPrices[type],
+      valable_jusquau: valid,
+      email: email || null, message: bf('bf-message').value.trim() || null,
+      email_envoye_at: email ? new Date().toISOString() : null
+    }));
+    if (!error || error.code !== '23505') break;
+  }
+  btn.disabled = false; btn.textContent = 'Émettre le bon';
+  if (error) { msg.textContent = 'Erreur : ' + error.message; msg.hidden = false; return; }
+  bonModal.close();
   loadBons();
 });
 
