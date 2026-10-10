@@ -1,7 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/blog/:slug", "destination": "/blog/article.html?slug=:slug" },
-    { "source": "/sitemap-blog.xml", "destination": "/api/sitemap-blog" }
+    {
+      "source": "/mentions-legales",
+      "destination": "/mentions-legales.html"
+    },
+    {
+      "source": "/confidentialite",
+      "destination": "/confidentialite.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/blog/article.html?slug=:slug"
+    },
+    {
+      "source": "/sitemap-blog.xml",
+      "destination": "/api/sitemap-blog"
+    }
   ]
 }
