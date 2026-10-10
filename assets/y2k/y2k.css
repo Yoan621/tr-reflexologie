@@ -1,0 +1,33 @@
+/* Éléments graphiques Y2K (kit de l'affiche Trail de Tavel v10) :
+   étoiles 4 branches, étoile filante, anneaux orbitaux.
+   Formes en masque alpha, couleur = currentColor → toujours dans la charte
+   (crème #D9D8C0 sur fond vert, vert sapin #405035 sur fond crème). */
+.y2k{position:absolute;display:block;pointer-events:none;background:currentColor;
+  -webkit-mask:var(--y2k) center/contain no-repeat;mask:var(--y2k) center/contain no-repeat}
+.y2k-star{--y2k:url('/assets/y2k/etoile-4branches.webp');width:.55em;aspect-ratio:279/300}
+.y2k-dot{--y2k:url('/assets/y2k/etoile-petite.webp');width:.27em;aspect-ratio:234/300}
+.y2k-shoot{--y2k:url('/assets/y2k/etoile-filante.webp');aspect-ratio:300/227}
+.y2k-rings{--y2k:url('/assets/y2k/anneaux-orbitaux.webp');aspect-ratio:600/471}
+.y2k-on-dark{color:#D9D8C0}
+.y2k-on-light{color:#405035}
+
+/* Titre décoré : la boîte colle au texte, les étoiles se posent en haut à droite */
+.y2k-h{position:relative;width:fit-content}
+.y2k-h>.y2k-star{right:-.72em;top:-.28em}
+.y2k-h>.y2k-dot{right:-1.05em;top:.34em}
+
+/* Anneaux en orbite autour du portrait (section À propos), passent derrière la photo */
+.y2k-rings--portrait{width:56%;left:-5%;top:50%;transform:translateY(-50%);opacity:.5}
+
+@media (prefers-reduced-motion:no-preference){
+  .y2k-star,.y2k-dot{animation:y2kTwinkle 3.6s ease-in-out infinite}
+  .y2k-dot{animation-delay:1.3s}
+}
+@keyframes y2kTwinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.82)}}
+
+@media (max-width:640px){
+  .y2k-h>.y2k-star{right:-.58em}
+  .y2k-h>.y2k-dot{right:-.86em}
+  .y2k-shoot{opacity:.45!important}
+  .y2k-rings--portrait{width:118%;left:-9%;top:0;transform:translateY(-6%);opacity:.4}
+}
