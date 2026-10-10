@@ -24,9 +24,11 @@
 <meta id="twitter-image" name="twitter:image" content="../assets/favicons/twitter-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/Honacu.woff2" as="font" type="font/woff2" crossorigin>
+<link href="/assets/fonts/fonts.css" rel="stylesheet">
 <style>
-body{margin:0;background:#F6EEE0;font-family:'Work Sans',system-ui,sans-serif;color:#23281E;text-wrap:pretty}
+body{margin:0;background:#F6EEE0;font-family:'Lexend Exa',system-ui,sans-serif;color:#23281E;text-wrap:pretty}
 a{color:#405035;text-decoration:none}
 a:hover{color:#6E7F5E}
 *{box-sizing:border-box}
@@ -37,9 +39,9 @@ a:hover{color:#6E7F5E}
 .nav-soins-menu a{padding:9px 12px;border-radius:6px;font-size:14px;color:#3E4335;display:block}
 .nav-soins-menu a:hover{background:#F3EEDF;color:#2F3B27}
 .article-body p{margin:0 0 18px;font-size:16px;line-height:1.8;color:#3E4335}
-.article-body h2{margin:38px 0 12px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27}
-.article-body h3{margin:30px 0 10px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:22px;line-height:1.3;color:#2F3B27}
-.article-body h4{margin:24px 0 8px;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:18px;line-height:1.35;color:#2F3B27}
+.article-body h2{margin:38px 0 12px;font-family:'Honacu',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27}
+.article-body h3{margin:30px 0 10px;font-family:'Honacu',serif;font-weight:400;font-size:22px;line-height:1.3;color:#2F3B27}
+.article-body h4{margin:24px 0 8px;font-family:'Honacu',serif;font-weight:400;font-size:18px;line-height:1.35;color:#2F3B27}
 .article-body a{color:#405035;text-decoration:underline;text-underline-offset:2px}
 .article-body a:hover{color:#6E7F5E}
 .article-body ul,.article-body ol{margin:0 0 18px;padding-left:24px;font-size:16px;line-height:1.8;color:#3E4335}
@@ -144,7 +146,7 @@ a:hover{color:#6E7F5E}
 <div style="flex:1 1 220px;min-width:200px;display:flex;flex-direction:column;gap:12px">
 <span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Contact</span>
 <span style="font-size:14.5px;line-height:1.6;color:#3E4335">543 chemin de Valinière<br>30126 Tavel</span>
-<a href="tel:+33629563570" style="font-size:14.5px;color:#405035">06 29 56 34 70</a>
+<a href="tel:+33629563470" style="font-size:14.5px;color:#405035">06 29 56 34 70</a>
 <a href="mailto:trreflexologie@gmail.com" style="font-size:14.5px;color:#405035">trreflexologie@gmail.com</a>
 </div>
 </div>
@@ -297,7 +299,7 @@ document.querySelectorAll('.hoverable').forEach(el => {
         }, null, 2);
 
         const sectionsHtml = (a.sections || []).map(s =>
-          (s.h2 ? '<h2 style="margin:36px 0 12px;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27">' + escapeHtml(s.h2) + '</h2>' : '') +
+          (s.h2 ? '<h2 style="margin:36px 0 12px;font-family:\'Honacu\',serif;font-weight:400;font-size:26px;line-height:1.25;color:#2F3B27">' + escapeHtml(s.h2) + '</h2>' : '') +
           renderContent(s.content)
         ).join('');
 
@@ -309,7 +311,7 @@ document.querySelectorAll('.hoverable').forEach(el => {
           '</nav>' +
           '<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px">' +
             (a.categorie ? '<span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">' + escapeHtml(a.categorie) + '</span>' : '') +
-            '<h1 style="margin:0;font-family:\'Libre Caslon Display\',serif;font-weight:400;font-size:clamp(30px,4.4vw,44px);line-height:1.1;color:#2F3B27">' + escapeHtml(a.titre) + '</h1>' +
+            '<h1 style="margin:0;font-family:\'Honacu\',serif;font-weight:400;font-size:clamp(30px,4.4vw,44px);line-height:1.1;color:#2F3B27">' + escapeHtml(a.titre) + '</h1>' +
             '<span style="font-size:13px;color:#8A8B78">Par Nathalie Roudil' + (a.published_at ? ' · ' + dfmt(a.published_at) : '') + '</span>' +
           '</div>' +
           (a.image_une_url ? '<img src="' + a.image_une_url + '" alt="' + escapeHtml(a.image_une_alt || a.titre) + '" style="width:100%;border-radius:6px;margin-top:28px;display:block">' : '') +

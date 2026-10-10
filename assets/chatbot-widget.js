@@ -3,10 +3,10 @@
 
   var HTML = ''
     + '<button id="tr-chat-toggle" aria-label="Ouvrir le chat" style="position:fixed;bottom:22px;right:22px;width:58px;height:58px;border-radius:50%;background:#405035;color:#F6EEE0;border:none;box-shadow:0 6px 18px rgba(29,34,24,.28);font-size:24px;cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;transition:transform .2s ease">💬</button>'
-    + '<div id="tr-chat-window" style="display:none;position:fixed;bottom:90px;right:22px;width:min(360px,92vw);height:min(520px,72vh);background:#F6EEE0;border:1px solid #E0D7C4;border-radius:14px;box-shadow:0 16px 40px rgba(29,34,24,.28);z-index:60;flex-direction:column;overflow:hidden;font-family:\'Work Sans\',system-ui,sans-serif">'
+    + '<div id="tr-chat-window" style="display:none;position:fixed;bottom:90px;right:22px;width:min(360px,92vw);height:min(520px,72vh);background:#F6EEE0;border:1px solid #E0D7C4;border-radius:14px;box-shadow:0 16px 40px rgba(29,34,24,.28);z-index:60;flex-direction:column;overflow:hidden;font-family:\'Lexend Exa\',system-ui,sans-serif">'
     +   '<div style="background:#405035;color:#F6EEE0;padding:14px 16px;display:flex;align-items:center;gap:10px">'
     +     '<div style="width:34px;height:34px;border-radius:50%;background:rgba(246,238,224,.16);display:flex;align-items:center;justify-content:center;font-size:16px">✦</div>'
-    +     '<div style="flex:1"><div style="font-family:\'Libre Caslon Display\',serif;font-size:15px">Assistante TR Réflexologie</div><div style="font-size:11px;color:#C9CBB6">Répond à vos questions, prend RDV</div></div>'
+    +     '<div style="flex:1"><div style="font-family:\'Honacu\',serif;font-size:15px">Assistante TR Réflexologie</div><div style="font-size:11px;color:#C9CBB6">Répond à vos questions, prend RDV</div></div>'
     +     '<button id="tr-chat-close" aria-label="Fermer" style="background:none;border:none;color:#F6EEE0;font-size:20px;cursor:pointer;padding:4px">×</button>'
     +   '</div>'
     +   '<div id="tr-chat-messages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#FDFBF6"></div>'
@@ -16,7 +16,7 @@
     +     '<button type="button" class="tr-chat-sugg" style="padding:7px 12px;background:#EDE7D7;border:1px solid #E0D7C4;border-radius:999px;font-size:12px;color:#3E4335;cursor:pointer">Vos horaires ?</button>'
     +   '</div>'
     +   '<form id="tr-chat-form" style="display:flex;gap:8px;padding:12px;border-top:1px solid #E0D7C4;background:#F6EEE0">'
-    +     '<input id="tr-chat-input" type="text" autocomplete="off" placeholder="Posez votre question…" style="flex:1;padding:11px 12px;border:1px solid #D8CEB9;border-radius:999px;font-family:\'Work Sans\',sans-serif;font-size:13.5px;background:#FDFBF6;color:#23281E">'
+    +     '<input id="tr-chat-input" type="text" autocomplete="off" placeholder="Posez votre question…" style="flex:1;padding:11px 12px;border:1px solid #D8CEB9;border-radius:999px;font-family:\'Lexend Exa\',sans-serif;font-size:13.5px;background:#FDFBF6;color:#23281E">'
     +     '<button type="submit" aria-label="Envoyer" style="width:40px;height:40px;border-radius:50%;background:#405035;color:#F6EEE0;border:none;cursor:pointer;font-size:16px">➤</button>'
     +   '</form>'
     + '</div>';

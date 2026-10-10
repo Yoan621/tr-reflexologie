@@ -55,7 +55,7 @@
       const isSelected = selectedDate && date.getTime() === selectedDate.getTime();
       const disabled = isPast || !isOpen;
       btn.disabled = disabled;
-      btn.style.cssText = 'aspect-ratio:1;border-radius:50%;border:none;font-family:"Work Sans",sans-serif;font-size:13px;cursor:' + (disabled ? 'default' : 'pointer') + ';background:' + (isSelected ? '#405035' : 'transparent') + ';color:' + (isSelected ? '#F6EEE0' : (disabled ? '#C7C2AE' : '#3E4335')) + ';transition:background .15s ease,color .15s ease';
+      btn.style.cssText = 'aspect-ratio:1;border-radius:50%;border:none;font-family:"Lexend Exa",sans-serif;font-size:13px;cursor:' + (disabled ? 'default' : 'pointer') + ';background:' + (isSelected ? '#405035' : 'transparent') + ';color:' + (isSelected ? '#F6EEE0' : (disabled ? '#C7C2AE' : '#3E4335')) + ';transition:background .15s ease,color .15s ease';
       if (!disabled) {
         btn.addEventListener('mouseenter', () => { if (!isSelected) btn.style.background = '#DED4BF'; });
         btn.addEventListener('mouseleave', () => { if (!isSelected) btn.style.background = 'transparent'; });
@@ -184,11 +184,11 @@
         btn.title = 'Non disponible';
         btn.setAttribute('aria-label', slot + ' — non disponible');
         btn.innerHTML = '<span style="text-decoration:line-through">' + slot + '</span><span style="display:block;font-size:10px;letter-spacing:.02em">Non disponible</span>';
-        btn.style.cssText = 'padding:5px 6px;border:1px dashed #C7C2AE;color:#A9A590;background:#EFE9DC;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;line-height:1.15;cursor:not-allowed;text-align:center';
+        btn.style.cssText = 'padding:5px 6px;border:1px dashed #C7C2AE;color:#A9A590;background:#EFE9DC;border-radius:999px;font-family:"Lexend Exa",sans-serif;font-size:13px;line-height:1.15;cursor:not-allowed;text-align:center';
         slotsWrap.appendChild(btn);
         return;
       }
-      btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Work Sans",sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:background .15s ease,color .15s ease';
+      btn.style.cssText = 'padding:9px 10px;border:1px solid #405035;color:#405035;background:#FDFBF6;border-radius:999px;font-family:"Lexend Exa",sans-serif;font-size:13px;cursor:pointer;text-align:center;transition:background .15s ease,color .15s ease';
       // Survol : vert sapin plein pour reperer le creneau vise (btn cree dynamiquement,
       // le handler global .hoverable de index.html ne l'attrape pas).
       btn.addEventListener('mouseenter', () => { btn.style.background = '#405035'; btn.style.color = '#F6EEE0'; });
