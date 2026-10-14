@@ -10,6 +10,14 @@
 <link rel="stylesheet" href="assets/bo-common.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="assets/supabase-config.js"></script>
+<style>
+  @media print{
+    body *{visibility:hidden}
+    #facture-print,#facture-print *{visibility:visible}
+    #facture-print{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;padding:10mm!important}
+    @page{margin:12mm}
+  }
+</style>
 </head>
 <body>
 
@@ -58,6 +66,7 @@
 <h1 style="margin:0;font-family:'Libre Caslon Display',serif;font-weight:400;font-size:29px;line-height:1.1;color:#2F3B27">Factures</h1>
 <span style="font-size:12.5px;color:#8A8B78">Établies sur demande, paiement en espèces</span>
 </div>
+<button type="button" id="factures-add-btn" style="height:42px;padding:0 20px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">+ Nouvelle facture</button>
 </header>
 
 <div style="padding:clamp(20px,3vw,34px);display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
@@ -77,7 +86,7 @@
 <aside style="flex:1 1 320px;min-width:300px;display:flex;flex-direction:column;gap:18px">
 <div style="background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:24px 22px;display:flex;flex-direction:column;gap:16px">
 <span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A8B78">Aperçu facture</span>
-<div style="padding:20px;background:#F6EEE0;border:1px solid #E6DECE;border-radius:3px;display:flex;flex-direction:column;gap:14px">
+<div id="facture-print" style="padding:20px;background:#F6EEE0;border:1px solid #E6DECE;border-radius:3px;display:flex;flex-direction:column;gap:14px">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
 <img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:52px;width:auto;display:block;mix-blend-mode:multiply">
 <div style="text-align:right;font-size:11.5px;line-height:1.6;color:#5A5F4C">543 chemin de Valinière<br>30126 Tavel</div>
@@ -85,6 +94,7 @@
 <div id="facture-preview" class="empty-state" style="padding:20px 4px">Sélectionnez une facture pour l'aperçu.</div>
 <p style="margin:0;font-size:11px;line-height:1.6;color:#8A8B78">Technique de bien-être non conventionnée. Document remis à la demande du client pour transmission à sa mutuelle.</p>
 </div>
+<button type="button" id="facture-print-btn" hidden style="height:42px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Imprimer / PDF</button>
 </div>
 <div style="background:#405035;color:#F6EEE0;border-radius:4px;padding:22px 20px;display:flex;flex-direction:column;gap:12px">
 <span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#A9B39A">Encaissements du mois</span>
@@ -96,6 +106,23 @@
 </main>
 </div>
 
+<dialog id="facture-modal" class="bon-modal">
+<form id="facture-form" method="dialog">
+<div class="bm-head"><h2>Nouvelle facture</h2><button type="button" class="bm-x" id="facture-close" aria-label="Fermer">✕</button></div>
+<div class="bm-row"><label>N° de facture<input id="ff-numero" required autocomplete="off" maxlength="30"></label><label>Date<input id="ff-date" type="date" required></label></div>
+<label>Fiche client<select id="ff-client"><option value="">— Saisie libre (sans fiche) —</option></select></label>
+<label>Nom du client *<input id="ff-nom" required autocomplete="off" maxlength="120"></label>
+<label>Adresse du client<input id="ff-adresse" autocomplete="off" maxlength="200" placeholder="facultatif"></label>
+<label>Tarif<select id="ff-tarif"><option value="">Autre (saisie libre)</option><option value="Séance de réflexologie — 30 min|35">30 min · 35 €</option><option value="Séance de réflexologie — 1 h|50" selected>1 heure · 50 €</option><option value="Séance de réflexologie — 2 h|75">2 heures · 75 €</option><option value="Forfait 3 séances de réflexologie d'1 h|140">Forfait 3 séances · 140 €</option></select></label>
+<label>Prestation *<input id="ff-soin" required autocomplete="off" maxlength="160"></label>
+<label>Détail (facultatif)<textarea id="ff-description" maxlength="600" placeholder="Ex. réflexologie plantaire, séances du 3, 10 et 17 octobre"></textarea></label>
+<div class="bm-row"><label>Montant (€) *<input id="ff-montant" type="number" required min="0" step="0.01" inputmode="decimal"></label><label>Paiement<select id="ff-mode"><option value="espèces">Espèces</option><option value="chèque">Chèque</option><option value="virement">Virement</option><option value="carte">Carte</option><option value="bon cadeau">Bon cadeau</option></select></label></div>
+<label>Statut<select id="ff-statut"><option value="payee">Payée</option><option value="a_etablir">À établir</option></select></label>
+<p id="ff-msg" class="bm-msg" hidden></p>
+<div class="bm-actions"><button type="button" class="bm-cancel" id="facture-cancel">Annuler</button><button type="submit" class="bm-ok" id="ff-submit">Créer la facture</button></div>
+</form>
+</dialog>
+
 <script src="assets/bo-common.js"></script>
 <script>
 const sb = BO.sb, money = BO.money, dfmt = BO.dfmt;
@@ -106,11 +133,23 @@ const countEl = document.getElementById('factures-count');
 const totalEl = document.getElementById('factures-total');
 const previewEl = document.getElementById('facture-preview');
 
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const printBtn = document.getElementById('facture-print-btn');
+let clientsById = {};
+let facturesCache = [];
+
 async function loadFactures() {
-  const { data, error } = await sb.from('factures').select('*').order('date', { ascending: false });
+  const [{ data, error }, { data: clients }] = await Promise.all([
+    sb.from('factures').select('*').order('date', { ascending: false }).order('numero', { ascending: false }),
+    sb.from('clients').select('id, nom, adresse').order('nom', { ascending: true })
+  ]);
   if (error) { listEl.textContent = 'Erreur de chargement.'; return; }
+  clientsById = Object.fromEntries((clients || []).map(c => [c.id, c]));
+  facturesCache = data;
   countEl.textContent = data.length + (data.length > 1 ? ' factures' : ' facture');
-  const total = data.filter(f => f.statut === 'payee').reduce((s, f) => s + Number(f.montant), 0);
+  const now = new Date();
+  const total = data.filter(f => f.statut === 'payee' && new Date(f.date).getMonth() === now.getMonth() && new Date(f.date).getFullYear() === now.getFullYear())
+    .reduce((s, f) => s + Number(f.montant), 0);
   totalEl.textContent = money(total);
 
   listEl.innerHTML = '';
@@ -120,26 +159,107 @@ async function loadFactures() {
     const row = document.createElement('div');
     row.style.cssText = 'display:grid;grid-template-columns:.8fr 1.2fr .9fr .7fr 1fr;padding:15px 20px;border-bottom:1px solid #EFE8DA;align-items:center;font-size:14px;color:#2F3B27;cursor:pointer';
     const statusBadge = f.statut === 'payee'
-      ? '<span style="padding:4px 10px;background:#E4E7DA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#405035">Payée · ' + (f.mode_paiement || 'espèces') + '</span>'
+      ? '<span style="padding:4px 10px;background:#E4E7DA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#405035">Payée · ' + esc(f.mode_paiement || 'espèces') + '</span>'
       : '<span style="padding:4px 10px;border:1px solid #C9C0AA;border-radius:999px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A6F3E">À établir</span>';
     row.innerHTML =
-      '<span style="color:#5A5F4C">' + f.numero + '</span><span>' + (f.client_id || '') + '</span>' +
-      '<span style="color:#5A5F4C">' + (f.soin || '') + '</span><span style="color:#405035">' + money(f.montant) + '</span><span>' + statusBadge + '</span>';
+      '<span style="color:#5A5F4C">' + esc(f.numero) + '</span><span>' + esc(clientName(f)) + '</span>' +
+      '<span style="color:#5A5F4C">' + esc(f.soin || '') + '</span><span style="color:#405035">' + money(f.montant) + '</span><span>' + statusBadge + '</span>';
     row.addEventListener('click', () => showFacture(f));
     listEl.appendChild(row);
   });
 }
 
+function clientName(f) {
+  return f.nom_client || (clientsById[f.client_id] || {}).nom || '';
+}
+
 function showFacture(f) {
+  const adresse = f.adresse_client || (clientsById[f.client_id] || {}).adresse || '';
+  const paye = f.statut === 'payee';
   previewEl.className = '';
   previewEl.innerHTML =
-    '<div style="display:flex;justify-content:space-between;font-size:12.5px;color:#5A5F4C"><span>Facture ' + f.numero + '</span><span>' + dfmt(f.date) + '</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:12.5px;color:#5A5F4C"><span>Facture ' + esc(f.numero) + '</span><span>' + dfmt(f.date) + '</span></div>' +
+    '<div style="display:flex;flex-direction:column;gap:2px;font-size:13px;color:#3E4335"><span style="font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8A8B78">Client</span><span>' + esc(clientName(f)) + '</span>' +
+      (adresse ? '<span style="color:#5A5F4C;white-space:pre-wrap">' + esc(adresse) + '</span>' : '') + '</div>' +
     '<div style="padding-top:12px;border-top:1px solid #E0D7C4;display:flex;flex-direction:column;gap:8px">' +
-      '<div style="display:flex;justify-content:space-between;font-size:13px;color:#3E4335"><span>' + (f.soin || 'Séance') + '</span><span>' + money(f.montant) + '</span></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:13px;color:#8A8B78"><span>Réglé en ' + (f.mode_paiement || 'espèces') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#3E4335"><span>' + esc(f.soin || 'Séance') + '</span><span>' + money(f.montant) + '</span></div>' +
+      (f.description ? '<div style="font-size:12.5px;color:#5A5F4C;white-space:pre-wrap">' + esc(f.description) + '</div>' : '') +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;color:#8A8B78"><span>' + (paye ? 'Réglé en ' + esc(f.mode_paiement || 'espèces') : 'Non réglée') + '</span></div>' +
     '</div>' +
     '<div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid #E0D7C4;font-family:\'Libre Caslon Display\',serif;font-size:22px;color:#405035"><span>Total</span><span>' + money(f.montant) + '</span></div>';
+  printBtn.hidden = false;
 }
+printBtn.addEventListener('click', () => window.print());
+
+// --- Création manuelle ---
+const factureModal = document.getElementById('facture-modal');
+const ff = id => document.getElementById(id);
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
+// numéro suivant F-AAAA-NNN (séquentiel par année, obligatoire pour une facture)
+async function nextNumero(year) {
+  const { data } = await sb.from('factures').select('numero').like('numero', 'F-' + year + '-%');
+  const max = (data || []).reduce((m, r) => Math.max(m, parseInt(r.numero.split('-')[2], 10) || 0), 0);
+  return 'F-' + year + '-' + String(max + 1).padStart(3, '0');
+}
+
+function applyTarif() {
+  const v = ff('ff-tarif').value;
+  if (!v) return;
+  const [soin, prix] = v.split('|');
+  ff('ff-soin').value = soin;
+  ff('ff-montant').value = prix;
+}
+
+document.getElementById('factures-add-btn').addEventListener('click', async () => {
+  ff('facture-form').reset(); ff('ff-msg').hidden = true;
+  const sel = ff('ff-client');
+  sel.length = 1;
+  Object.values(clientsById).forEach(c => sel.add(new Option(c.nom, c.id)));
+  ff('ff-date').value = todayStr();
+  applyTarif();
+  factureModal.showModal();
+  ff('ff-numero').value = await nextNumero(new Date().getFullYear());
+});
+ff('ff-tarif').addEventListener('change', applyTarif);
+ff('ff-client').addEventListener('change', () => {
+  const c = clientsById[ff('ff-client').value];
+  if (!c) return;
+  ff('ff-nom').value = c.nom || '';
+  ff('ff-adresse').value = c.adresse || '';
+});
+ff('facture-close').addEventListener('click', () => factureModal.close());
+ff('facture-cancel').addEventListener('click', () => factureModal.close());
+ff('facture-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = ff('ff-msg'); msg.hidden = true;
+  const montant = Number(ff('ff-montant').value);
+  if (!ff('ff-nom').value.trim() || !ff('ff-soin').value.trim() || !(montant >= 0)) {
+    msg.textContent = 'Nom, prestation et montant sont obligatoires.'; msg.hidden = false; return;
+  }
+  const btn = ff('ff-submit'); btn.disabled = true; btn.textContent = 'Création…';
+  const statut = ff('ff-statut').value;
+  const { data, error } = await sb.from('factures').insert({
+    numero: ff('ff-numero').value.trim(),
+    date: ff('ff-date').value,
+    client_id: ff('ff-client').value || null,
+    nom_client: ff('ff-nom').value.trim(),
+    adresse_client: ff('ff-adresse').value.trim() || null,
+    soin: ff('ff-soin').value.trim(),
+    description: ff('ff-description').value.trim() || null,
+    montant,
+    mode_paiement: ff('ff-mode').value,
+    statut
+  }).select().single();
+  btn.disabled = false; btn.textContent = 'Créer la facture';
+  if (error) {
+    msg.textContent = error.code === '23505' ? 'Ce numéro de facture existe déjà.' : 'Erreur : ' + error.message;
+    msg.hidden = false; return;
+  }
+  factureModal.close();
+  await loadFactures();
+  showFacture(data);
+});
 
 BO.initAuth(loadFactures);
 </script>

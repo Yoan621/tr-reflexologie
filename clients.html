@@ -59,6 +59,7 @@
 <span style="font-size:12.5px;color:#8A8B78">Historique, notes de séance et facturation</span>
 </div>
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<button type="button" id="clients-add-btn" style="height:42px;padding:0 20px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">+ Nouvelle fiche</button>
 <div style="display:flex;align-items:center;gap:9px;padding:0 14px;height:44px;background:#F6EEE0;border:1px solid #E0D7C4;border-radius:3px">
 <span style="font-size:13px;color:#8A8B78">Rechercher</span>
 <input type="text" placeholder="client, téléphone…" style="border:none;background:transparent;font-size:13.5px;color:#23281E;outline:none;width:150px">
@@ -79,7 +80,7 @@
 <div style="display:grid;grid-template-columns:1.4fr 1fr .8fr .7fr .7fr;padding:12px 20px;background:#F6EEE0;border-bottom:1px solid #EDE5D6;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8A8B78">
 <span>Client</span><span>Téléphone</span><span>Dernière séance</span><span>Séances</span><span>Total</span>
 </div>
-<div id="clients-list" class="empty-state">Aucune fiche client pour l'instant.<br>Une fiche se crée automatiquement à la première réservation.</div>
+<div id="clients-list" class="empty-state">Aucune fiche client pour l'instant.<br>Une fiche se crée à la première réservation, ou via « + Nouvelle fiche ».</div>
 </section>
 <aside id="client-detail" style="flex:1 1 320px;min-width:300px;background:#FDFBF6;border:1px solid #E6DECE;border-radius:4px;padding:24px 22px;display:flex;flex-direction:column;gap:20px">
 <div class="empty-state">Sélectionnez une fiche client dans la liste pour voir son détail, ses notes de séance et ses factures ici.</div>
@@ -88,6 +89,19 @@
 
 </main>
 </div>
+
+<dialog id="client-modal" class="bon-modal">
+<form id="client-form" method="dialog">
+<div class="bm-head"><h2>Nouvelle fiche client</h2><button type="button" class="bm-x" id="client-close" aria-label="Fermer">✕</button></div>
+<label>Nom et prénom *<input id="cf-nom" required autocomplete="off" maxlength="120"></label>
+<div class="bm-row"><label>Téléphone<input id="cf-tel" type="tel" autocomplete="off" maxlength="30"></label><label>Email<input id="cf-email" type="email" autocomplete="off" maxlength="160"></label></div>
+<label>Adresse<input id="cf-adresse" autocomplete="off" maxlength="200" placeholder="facultatif, utile pour les factures"></label>
+<div class="bm-row"><label>Mutuelle<input id="cf-mutuelle" autocomplete="off" maxlength="120"></label><label>Paiement habituel<select id="cf-paiement"><option value="especes">Espèces</option><option value="cheque">Chèque</option><option value="virement">Virement</option><option value="bon">Bon cadeau</option></select></label></div>
+<label>Notes (facultatif)<textarea id="cf-notes" maxlength="1000"></textarea></label>
+<p id="cf-msg" class="bm-msg" hidden></p>
+<div class="bm-actions"><button type="button" class="bm-cancel" id="client-cancel">Annuler</button><button type="submit" class="bm-ok" id="cf-submit">Créer la fiche</button></div>
+</form>
+</dialog>
 
 <script src="assets/bo-common.js"></script>
 <script>
@@ -105,7 +119,7 @@ async function loadClients() {
   countEl.textContent = clients.length + (clients.length > 1 ? ' fiches' : ' fiche');
   listEl.innerHTML = '';
   listEl.className = clients.length ? '' : 'empty-state';
-  if (!clients.length) { listEl.textContent = "Aucune fiche client pour l'instant. Une fiche se crée automatiquement à la première réservation."; return; }
+  if (!clients.length) { listEl.textContent = "Aucune fiche client pour l'instant. Une fiche se crée à la première réservation, ou via « + Nouvelle fiche »."; return; }
 
   const { data: rdvs } = await sb.from('rendez_vous').select('client_id, date, prix').eq('statut', 'confirme');
 
@@ -133,8 +147,10 @@ async function showClient(c, own) {
     '<div style="display:flex;flex-direction:column;gap:0;border-top:1px solid #EDE5D6;margin-top:16px">' +
       '<div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #EDE5D6;font-size:13.5px"><span style="color:#8A8B78">Téléphone</span><span style="color:#405035">' + esc(c.telephone) + '</span></div>' +
       '<div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #EDE5D6;font-size:13.5px"><span style="color:#8A8B78">Email</span><span style="color:#405035">' + esc(c.email) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #EDE5D6;font-size:13.5px"><span style="color:#8A8B78">Adresse</span><span style="color:#3E4335;text-align:right">' + esc(c.adresse || 'non renseignée') + '</span></div>' +
       '<div style="display:flex;justify-content:space-between;padding:11px 0;font-size:13.5px"><span style="color:#8A8B78">Mutuelle</span><span style="color:#3E4335">' + esc(c.mutuelle || 'non renseignée') + '</span></div>' +
     '</div>' +
+    (c.notes ? '<p style="margin:12px 0 0;padding:12px 14px;background:#F6EEE0;border-radius:3px;font-size:13px;line-height:1.6;color:#3E4335;white-space:pre-wrap">' + esc(c.notes) + '</p>' : '') +
     '<div id="client-notes" style="display:flex;flex-direction:column;gap:11px;margin-top:16px"></div>';
 
   const notesWrap = document.getElementById('client-notes');
@@ -176,6 +192,38 @@ async function deleteClient(c) {
   detailEl.innerHTML = '<div class="empty-state">Fiche supprimée.</div>';
   loadClients();
 }
+
+const clientModal = document.getElementById('client-modal');
+const cf = id => document.getElementById(id);
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+document.getElementById('clients-add-btn').addEventListener('click', () => {
+  cf('client-form').reset(); cf('cf-msg').hidden = true;
+  clientModal.showModal();
+});
+cf('client-close').addEventListener('click', () => clientModal.close());
+cf('client-cancel').addEventListener('click', () => clientModal.close());
+cf('client-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = cf('cf-msg'); msg.hidden = true;
+  const nom = cf('cf-nom').value.trim();
+  const email = cf('cf-email').value.trim();
+  if (!nom) { msg.textContent = 'Le nom est obligatoire.'; msg.hidden = false; return; }
+  if (email && !validEmail(email)) { msg.textContent = 'Adresse email invalide.'; msg.hidden = false; return; }
+  const btn = cf('cf-submit'); btn.disabled = true; btn.textContent = 'Création…';
+  const { data, error } = await sb.from('clients').insert({
+    nom, email: email || null,
+    telephone: cf('cf-tel').value.trim() || null,
+    adresse: cf('cf-adresse').value.trim() || null,
+    mutuelle: cf('cf-mutuelle').value.trim() || null,
+    paiement_habituel: cf('cf-paiement').value,
+    notes: cf('cf-notes').value.trim() || null
+  }).select().single();
+  btn.disabled = false; btn.textContent = 'Créer la fiche';
+  if (error) { msg.textContent = 'Erreur : ' + error.message; msg.hidden = false; return; }
+  clientModal.close();
+  await loadClients();
+  showClient(data, []);
+});
 
 BO.initAuth(loadClients);
 </script>
