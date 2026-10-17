@@ -170,10 +170,10 @@ a:hover{color:#6E7F5E}
 </nav>
 <div id="mobile-nav-overlay" style="display:none;position:fixed;inset:0;background:rgba(29,34,24,.4);z-index:25"></div>
 
-<section id="accueil" style="position:relative;width:100%;height:min(78vh,720px);min-height:520px;overflow:hidden">
+<section id="accueil" style="position:relative;width:100%;min-height:max(520px,min(78vh,720px));display:flex;align-items:flex-end;overflow:hidden">
 <div style="position:absolute;inset:0"><img src="assets/nathalie-cabinet-large.webp" alt="Séance de réflexologie plantaire" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div>
 <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(29,34,24,.72) 0%,rgba(29,34,24,.42) 46%,rgba(29,34,24,.06) 78%);pointer-events:none"></div>
-<div style="position:absolute;left:0;bottom:0;padding:clamp(28px,5vw,72px);max-width:min(760px,92%);display:flex;flex-direction:column;gap:20px;pointer-events:none">
+<div class="hero-content" style="position:relative;padding:clamp(28px,5vw,72px);max-width:min(760px,100%);display:flex;flex-direction:column;gap:20px;pointer-events:none">
 <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Réflexologie plantaire · palmaire · crânienne · Dien Chan</span>
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;pointer-events:auto">
 <span style="font-size:13.5px;color:#DCD5C2">Plus de 120 personnes accompagnées à Tavel</span>
@@ -215,11 +215,11 @@ a:hover{color:#6E7F5E}
 <span style="font-family:'Honacu',serif;font-weight:400;font-size:clamp(22px,2.2vw,30px);line-height:1.15;color:#F6EEE0">Trois portes d'entrée,<br>une même écoute</span>
 </div>
 </div>
-<div id="soins-ch-0" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);transition:opacity .5s ease,transform .5s ease">
+<div class="soins-ch" id="soins-ch-0" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);transition:opacity .5s ease,transform .5s ease">
 <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 1 sur 3</span>
 <h3 style="margin:0;font-family:'Honacu',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Crânienne ou Dien Chan</h3>
 <p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">Deux massages de la tête, en séances séparées. Tous deux soulagent maux de tête et charge mentale — la crânienne en douceur, le Dien Chan par les points du visage.</p>
-<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap;row-gap:10px;padding-top:6px">
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
 <span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
@@ -232,11 +232,11 @@ a:hover{color:#6E7F5E}
 <a href="soins/dien-chan.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">Dien Chan, en savoir plus →</a>
 </div>
 </div>
-<div id="soins-ch-1" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
+<div class="soins-ch" id="soins-ch-1" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
 <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 2 sur 3</span>
 <h3 style="margin:0;font-family:'Honacu',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Palmaire</h3>
 <p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">Un massage des mains, doux et facile à recevoir. Idéal si vos pieds sont sensibles au toucher, ou pour soulager les tensions liées aux écrans : poignets, avant-bras, épaules.</p>
-<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap;row-gap:10px;padding-top:6px">
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
 <span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
@@ -248,11 +248,11 @@ a:hover{color:#6E7F5E}
 <a href="soins/palmaire.html" style="font-size:13px;color:#F6EEE0;border-bottom:1px solid rgba(246,238,224,.5);padding-bottom:2px">En savoir plus →</a>
 </div>
 </div>
-<div id="soins-ch-2" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
+<div class="soins-ch" id="soins-ch-2" style="position:absolute;left:0;right:0;bottom:clamp(52px,7vw,92px);padding:0 clamp(28px,5vw,72px);display:flex;flex-direction:column;gap:16px;max-width:min(820px,92%);opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;pointer-events:none">
 <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#DCD5C2">Soin 3 sur 3</span>
 <h3 style="margin:0;font-family:'Honacu',serif;font-weight:400;font-size:clamp(33px,4.6vw,62px);line-height:1.02;color:#F6EEE0">Plantaire</h3>
 <p style="margin:0;max-width:42ch;font-size:clamp(15px,1.3vw,18px);line-height:1.65;color:#EAE4D5">La séance la plus complète : chaque zone du pied fait écho à une partie du corps. Elle agit en profondeur sur le stress installé, le sommeil et la digestion.</p>
-<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:nowrap;padding-top:6px;overflow-x:auto">
+<div style="display:flex;align-items:baseline;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap;row-gap:10px;padding-top:6px">
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">35 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">30 min</span>
 <span style="width:1px;height:22px;background:rgba(246,238,224,.32);display:block;flex:none"></span>
 <span style="font-family:'Honacu',serif;font-size:clamp(20px,2.6vw,44px);line-height:1;color:#F6EEE0;white-space:nowrap">50 €</span><span style="font-size:clamp(10px,1vw,13px);letter-spacing:.1em;text-transform:uppercase;color:#C9CBB6;white-space:nowrap">1 heure</span>
@@ -799,5 +799,41 @@ document.querySelectorAll('.hoverable').forEach(el => {
 <script src="assets/chatbot-widget.js"></script>
 
 <script src="assets/header-scroll.js"></script>
+<style>
+/* Responsive : petits écrans, écrans bas (paysage, laptop) et très grands écrans */
+@media (max-width:420px){
+  #accueil .hero-content > span:first-child{letter-spacing:.18em !important}
+  .soins-ch a.hoverable{padding:14px 22px !important}
+}
+@media (max-height:620px) and (min-width:600px){
+  #accueil .hero-content{gap:14px !important}
+  #accueil h1{font-size:clamp(32px,4.4vw,56px) !important}
+}
+@media (max-height:720px){
+  #soins > div > div:nth-of-type(2){display:none !important}
+}
+@media (max-height:500px){
+  #site-header{padding-top:8px !important;padding-bottom:8px !important}
+  #site-header img{height:44px !important}
+  #accueil{min-height:calc(100vh - 60px) !important}
+}
+@media (max-height:560px){
+  #soins .soins-ch{bottom:24px !important;gap:10px !important}
+  #soins .soins-ch h3{font-size:clamp(26px,4vw,40px) !important}
+  #soins .soins-ch p{font-size:14px !important;line-height:1.5 !important;max-width:60ch !important}
+}
+@media (max-height:460px){
+  #soins .soins-ch p{display:none !important}
+}
+@media (min-width:1700px){
+  #accueil .hero-content{margin-left:calc((100vw - 1600px)/2)}
+  #accueil h1{font-size:clamp(70px,3.6vw,96px) !important}
+  #accueil .hero-content{max-width:min(980px,100%) !important}
+  #accueil .hero-content p{font-size:21px !important;max-width:48ch !important}
+  #soins .soins-ch{max-width:1100px !important}
+  #soins .soins-ch h3{font-size:clamp(62px,3.4vw,88px) !important}
+  #soins .soins-ch p{font-size:21px !important}
+}
+</style>
 </body>
 </html>

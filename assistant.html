@@ -116,6 +116,8 @@
 <button type="button" class="chip" data-q="Quels sont mes rendez-vous de demain ?">Mes rendez-vous de demain<span>Heures, soins, téléphones</span></button>
 <button type="button" class="chip" data-q="Quelles demandes de rendez-vous sont encore à confirmer ?">Demandes à confirmer<span>Réservations en attente</span></button>
 <button type="button" class="chip" data-q="Combien ai-je encaissé ce mois-ci ?">Mon chiffre du mois<span>Factures payées</span></button>
+<button type="button" class="chip" data-q="Je voudrais créer une facture.">Créer une facture<span>Je vous pose quelques questions</span></button>
+<button type="button" class="chip" data-q="Je voudrais créer un bon cadeau.">Créer un bon d'achat<span>Bon cadeau, envoyé par email si besoin</span></button>
 <button type="button" class="chip" data-fill="Ferme mes créneaux du  au ">Fermer des créneaux<span>Congés, absence… (à compléter)</span></button>
 <button type="button" class="chip" data-fill="Réouvre mes créneaux du  au ">Rouvrir des créneaux<span>Remettre des jours en réservation</span></button>
 </div>
@@ -151,9 +153,15 @@ BO.initNav('assistant');
   document.getElementById('chat-hello').textContent = (h >= 18 || h < 5 ? 'Bonsoir' : 'Bonjour') + ' Nathalie';
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  // Mini-markdown sur du texte deja echappe : titres, listes, gras, italique, liens tel.
+  // Mini-markdown sur du texte deja echappe : titres, listes, gras, italique, liens tel,
+  // liens [texte](url) limites aux pages du site (factures, bons…).
+  const internalHref = u => {
+    const m = /^(?:https:\/\/(?:www\.)?tr-reflexologie\.com)?\/?([a-z0-9-]+\.html(?:\?[\w=&;%.-]*)?)$/i.exec(u);
+    return m ? m[1] : null;
+  };
   function md(src) {
     const inline = t => t
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, txt, u) => { const h = internalHref(u); return h ? '<a href="' + h + '">' + txt + '</a>' : txt; })
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/(^|[^*])\*(?!\s)(.+?)\*/g, '$1<em>$2</em>')
       .replace(/(^|[\s(])((?:\+33\s?|0)[1-9](?:[\s.]?\d{2}){4})/g, (m, p, n) => p + '<a href="tel:' + n.replace(/[^\d+]/g, '') + '">' + n + '</a>');

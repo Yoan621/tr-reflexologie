@@ -261,7 +261,14 @@ ff('facture-form').addEventListener('submit', async (e) => {
   showFacture(data);
 });
 
-BO.initAuth(loadFactures);
+// Lien direct depuis l'assistant : factures.html?numero=F-AAAA-NNN ouvre la facture.
+BO.initAuth(async () => {
+  await loadFactures();
+  const n = new URLSearchParams(location.search).get('numero');
+  if (!n) return;
+  const { data } = await sb.from('factures').select('*').eq('numero', n).maybeSingle();
+  if (data) showFacture(data);
+});
 </script>
 </body>
 </html>

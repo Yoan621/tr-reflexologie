@@ -93,3 +93,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid #405035;outline-offset
   input,textarea,select{font-size:16px !important}
   button,a{-webkit-tap-highlight-color:transparent}
 }
+.bon-modal label.bm-check{flex-direction:row;align-items:center;gap:8px;font-size:13px;letter-spacing:0;color:#3E4335;cursor:pointer}
+.bon-modal label.bm-check input{width:auto;margin:0}
+.bon-modal [hidden]{display:none !important}
