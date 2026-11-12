@@ -89,11 +89,14 @@
 <div id="facture-print" style="padding:20px;background:#F6EEE0;border:1px solid #E6DECE;border-radius:3px;display:flex;flex-direction:column;gap:14px">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
 <img src="assets/logo-tr.svg" alt="TR Réflexologie" style="height:52px;width:auto;display:block;mix-blend-mode:multiply">
-<div style="text-align:right;font-size:11.5px;line-height:1.6;color:#5A5F4C">543 chemin de Valinière<br>30126 Tavel</div>
+<div style="text-align:right;font-size:11.5px;line-height:1.6;color:#5A5F4C">Nathalie Roudil — TR Réflexologie<br>543 chemin de Valinière<br>30126 Tavel<br>SIRET 490 955 580 00041 · APE 8690F<br>06 29 56 34 70</div>
 </div>
 <div id="facture-preview" class="empty-state" style="padding:20px 4px">Sélectionnez une facture pour l'aperçu.</div>
+<p style="margin:0;font-size:11.5px;line-height:1.6;color:#5A5F4C">TVA non applicable, art. 293 B du CGI.</p>
 <p style="margin:0;font-size:11px;line-height:1.6;color:#8A8B78">Technique de bien-être non conventionnée. Document remis à la demande du client pour transmission à sa mutuelle.</p>
 </div>
+<button type="button" id="facture-mail-btn" hidden style="height:42px;background:#F6EEE0;color:#405035;border:1px solid #405035;border-radius:3px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Envoyer par email</button>
+<p id="facture-mail-info" style="margin:0;font-size:12px;color:#5A5F4C" hidden></p>
 <button type="button" id="facture-print-btn" hidden style="height:42px;background:#405035;color:#F6EEE0;border:none;border-radius:3px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Imprimer / PDF</button>
 </div>
 <div style="background:#405035;color:#F6EEE0;border-radius:4px;padding:22px 20px;display:flex;flex-direction:column;gap:12px">
@@ -112,11 +115,13 @@
 <div class="bm-row"><label>N° de facture<input id="ff-numero" required autocomplete="off" maxlength="30"></label><label>Date<input id="ff-date" type="date" required></label></div>
 <label>Fiche client<select id="ff-client"><option value="">— Saisie libre (sans fiche) —</option></select></label>
 <label>Nom du client *<input id="ff-nom" required autocomplete="off" maxlength="120"></label>
+<label>Email de la cliente<input id="ff-email" type="email" autocomplete="off" maxlength="160" placeholder="pour lui envoyer la facture"></label>
 <label>Adresse du client<input id="ff-adresse" autocomplete="off" maxlength="200" placeholder="facultatif"></label>
 <label>Tarif<select id="ff-tarif"><option value="">Autre (saisie libre)</option><option value="Séance de réflexologie — 30 min|35">30 min · 35 €</option><option value="Séance de réflexologie — 1 h|50" selected>1 heure · 50 €</option><option value="Séance de réflexologie — 2 h|75">2 heures · 75 €</option><option value="Forfait 3 séances de réflexologie d'1 h|140">Forfait 3 séances · 140 €</option></select></label>
 <label>Prestation *<input id="ff-soin" required autocomplete="off" maxlength="160"></label>
 <label>Détail (facultatif)<textarea id="ff-description" maxlength="600" placeholder="Ex. réflexologie plantaire, séances du 3, 10 et 17 octobre"></textarea></label>
 <div class="bm-row"><label>Montant (€) *<input id="ff-montant" type="number" required min="0" step="0.01" inputmode="decimal"></label><label>Paiement<select id="ff-mode"><option value="espèces">Espèces</option><option value="chèque">Chèque</option><option value="virement">Virement</option><option value="carte">Carte</option><option value="bon cadeau">Bon cadeau</option></select></label></div>
+<label class="bm-check" style="flex-direction:row;gap:8px;align-items:center"><input id="ff-envoyer" type="checkbox" style="width:auto"> Envoyer la facture par email à la création</label>
 <label>Statut<select id="ff-statut"><option value="payee">Payée</option><option value="a_etablir">À établir</option></select></label>
 <p id="ff-msg" class="bm-msg" hidden></p>
 <div class="bm-actions"><button type="button" class="bm-cancel" id="facture-cancel">Annuler</button><button type="submit" class="bm-ok" id="ff-submit">Créer la facture</button></div>
@@ -141,7 +146,7 @@ let facturesCache = [];
 async function loadFactures() {
   const [{ data, error }, { data: clients }] = await Promise.all([
     sb.from('factures').select('*').order('date', { ascending: false }).order('numero', { ascending: false }),
-    sb.from('clients').select('id, nom, adresse').order('nom', { ascending: true })
+    sb.from('clients').select('id, nom, adresse, email').order('nom', { ascending: true })
   ]);
   if (error) { listEl.textContent = 'Erreur de chargement.'; return; }
   clientsById = Object.fromEntries((clients || []).map(c => [c.id, c]));
@@ -173,7 +178,17 @@ function clientName(f) {
   return f.nom_client || (clientsById[f.client_id] || {}).nom || '';
 }
 
+let currentFacture = null;
+const mailBtn = document.getElementById('facture-mail-btn');
+const mailInfo = document.getElementById('facture-mail-info');
+function factureEmail(f) { return f.email || (clientsById[f.client_id] || {}).email || ''; }
+
 function showFacture(f) {
+  currentFacture = f;
+  mailBtn.hidden = false;
+  mailBtn.textContent = f.email_envoye_at ? 'Renvoyer par email' : 'Envoyer par email';
+  mailInfo.hidden = !f.email_envoye_at;
+  mailInfo.textContent = f.email_envoye_at ? 'Envoyée à ' + (f.email || '') + ' le ' + new Date(f.email_envoye_at).toLocaleDateString('fr-FR') : '';
   const adresse = f.adresse_client || (clientsById[f.client_id] || {}).adresse || '';
   const paye = f.statut === 'payee';
   previewEl.className = '';
@@ -190,6 +205,18 @@ function showFacture(f) {
   printBtn.hidden = false;
 }
 printBtn.addEventListener('click', () => window.print());
+mailBtn.addEventListener('click', async () => {
+  const f = currentFacture; if (!f) return;
+  const email = (prompt('Email de la cliente :', factureEmail(f)) || '').trim();
+  if (!email) return;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Email invalide.'); return; }
+  mailBtn.disabled = true;
+  const { data, error } = await sb.from('factures').update({ email, email_envoye_at: new Date().toISOString() }).eq('id', f.id).select().single();
+  mailBtn.disabled = false;
+  if (error) { alert('Erreur : ' + error.message); return; }
+  await loadFactures();
+  showFacture(data);
+});
 
 // --- Création manuelle ---
 const factureModal = document.getElementById('facture-modal');
@@ -227,6 +254,7 @@ ff('ff-client').addEventListener('change', () => {
   if (!c) return;
   ff('ff-nom').value = c.nom || '';
   ff('ff-adresse').value = c.adresse || '';
+  ff('ff-email').value = c.email || '';
 });
 ff('facture-close').addEventListener('click', () => factureModal.close());
 ff('facture-cancel').addEventListener('click', () => factureModal.close());
@@ -249,7 +277,9 @@ ff('facture-form').addEventListener('submit', async (e) => {
     description: ff('ff-description').value.trim() || null,
     montant,
     mode_paiement: ff('ff-mode').value,
-    statut
+    statut,
+    email: ff('ff-email').value.trim() || null,
+    email_envoye_at: (ff('ff-envoyer').checked && ff('ff-email').value.trim()) ? new Date().toISOString() : null
   }).select().single();
   btn.disabled = false; btn.textContent = 'Créer la facture';
   if (error) {
